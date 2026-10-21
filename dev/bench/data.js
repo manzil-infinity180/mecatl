@@ -361872,6 +361872,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792619474501,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "df2b7418be6cc515cd648b1ca697301036d15147",
+          "message": "fix(sdk): follow the Playwright and @types/node pins from the SDK update (#2469)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-21T17:53:21-04:00",
+          "tree_id": "87092591d37c1fa08c7a84a47f6ec8d3785ce98c",
+          "url": "https://github.com/stacklok/mecatl/commit/df2b7418be6cc515cd648b1ca697301036d15147"
+        },
+        "date": 1792620324362,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16111.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12876,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 794,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -472376,6 +472415,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792620321293,
+  "lastUpdate": 1792620325178,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
