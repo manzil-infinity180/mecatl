@@ -326532,6 +326532,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792619469783,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "df2b7418be6cc515cd648b1ca697301036d15147",
+          "message": "fix(sdk): follow the Playwright and @types/node pins from the SDK update (#2469)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-21T17:53:21-04:00",
+          "tree_id": "87092591d37c1fa08c7a84a47f6ec8d3785ce98c",
+          "url": "https://github.com/stacklok/mecatl/commit/df2b7418be6cc515cd648b1ca697301036d15147"
+        },
+        "date": 1792620320495,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -472342,6 +472376,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792620317517,
+  "lastUpdate": 1792620321293,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
