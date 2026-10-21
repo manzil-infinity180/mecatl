@@ -326174,6 +326174,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792617917363,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e7800d47ae8428414d8af432636e284ab0fef4db",
+          "message": "chore(deps): update typescript sdk (#2244)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-21T17:37:51-04:00",
+          "tree_id": "d172cbf248b3d85ba103342b239a190d670db7ab",
+          "url": "https://github.com/stacklok/mecatl/commit/e7800d47ae8428414d8af432636e284ab0fef4db"
+        },
+        "date": 1792619469783,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -471831,6 +471865,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792619466075,
+  "lastUpdate": 1792619470827,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
