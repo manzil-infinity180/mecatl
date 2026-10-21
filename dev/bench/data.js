@@ -360284,6 +360284,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792612210889,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29541485+ChrisJBurns@users.noreply.github.com",
+            "name": "Chris Burns",
+            "username": "ChrisJBurns"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f5e33086e7adc4b5d06100d2cddbcd116cf816fe",
+          "message": "test(identitybroker): add the offline agent identity harness (#2459)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-21T20:59:06+01:00",
+          "tree_id": "031cc606c921f46356cc69605f017a1621215d53",
+          "url": "https://github.com/stacklok/mecatl/commit/f5e33086e7adc4b5d06100d2cddbcd116cf816fe"
+        },
+        "date": 1792613475736,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16128,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12893,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -470332,6 +470371,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792613472856,
+  "lastUpdate": 1792613476552,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
