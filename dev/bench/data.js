@@ -325458,6 +325458,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792613472197,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d50481afb00e874fc0381aab430d2f676e7640fe",
+          "message": "ci(release): build execution images on main, not on every release (#2435)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-21T16:23:50-04:00",
+          "tree_id": "08d3368a3c6acdb55bf54e6029ac00c71dd954b5",
+          "url": "https://github.com/stacklok/mecatl/commit/d50481afb00e874fc0381aab430d2f676e7640fe"
+        },
+        "date": 1792614968870,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -470809,6 +470843,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792614965050,
+  "lastUpdate": 1792614969913,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
