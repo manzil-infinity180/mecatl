@@ -360681,6 +360681,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792613475736,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d50481afb00e874fc0381aab430d2f676e7640fe",
+          "message": "ci(release): build execution images on main, not on every release (#2435)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-21T16:23:50-04:00",
+          "tree_id": "08d3368a3c6acdb55bf54e6029ac00c71dd954b5",
+          "url": "https://github.com/stacklok/mecatl/commit/d50481afb00e874fc0381aab430d2f676e7640fe"
+        },
+        "date": 1792614973615,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16147,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12911,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -470843,6 +470882,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792614969913,
+  "lastUpdate": 1792614974666,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
