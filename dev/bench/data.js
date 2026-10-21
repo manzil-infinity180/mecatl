@@ -324742,6 +324742,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792582467583,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29541485+ChrisJBurns@users.noreply.github.com",
+            "name": "Chris Burns",
+            "username": "ChrisJBurns"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "477a6e330222ca62287720febcfe69901890dc0d",
+          "message": "feat(identitybroker): start the identity broker in mecak8s behind an authentication boundary (#2450)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-21T20:38:59+01:00",
+          "tree_id": "aa40eed48afe05c5f25c7e454f828ace3e6d4591",
+          "url": "https://github.com/stacklok/mecatl/commit/477a6e330222ca62287720febcfe69901890dc0d"
+        },
+        "date": 1792612206335,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -469787,6 +469821,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792612202990,
+  "lastUpdate": 1792612207449,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
