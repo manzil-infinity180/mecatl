@@ -361475,6 +361475,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792617921939,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e7800d47ae8428414d8af432636e284ab0fef4db",
+          "message": "chore(deps): update typescript sdk (#2244)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-21T17:37:51-04:00",
+          "tree_id": "d172cbf248b3d85ba103342b239a190d670db7ab",
+          "url": "https://github.com/stacklok/mecatl/commit/e7800d47ae8428414d8af432636e284ab0fef4db"
+        },
+        "date": 1792619474501,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16146,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12910.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -471865,6 +471904,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792619470827,
+  "lastUpdate": 1792619475514,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
