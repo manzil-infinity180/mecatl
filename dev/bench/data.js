@@ -325816,6 +325816,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792614968870,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4858699fbb563644afcaa0671c684ef3fdd71ec1",
+          "message": "fix(security): require Go 1.27.3 and patched vite in the TypeScript SDK (#2466)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-21T17:12:17-04:00",
+          "tree_id": "f22ea0054058f9103982887f9d005be334e76dc9",
+          "url": "https://github.com/stacklok/mecatl/commit/4858699fbb563644afcaa0671c684ef3fdd71ec1"
+        },
+        "date": 1792617917363,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -471320,6 +471354,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792617914020,
+  "lastUpdate": 1792617918474,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
