@@ -329038,6 +329038,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792684011336,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29541485+ChrisJBurns@users.noreply.github.com",
+            "name": "Chris Burns",
+            "username": "ChrisJBurns"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9aaf5db580fc89f1fc982ecd7eb4aeffe07e9307",
+          "message": "feat(identitybroker): open and close broker sessions with Mecatl sessions (#2467)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T16:55:14+01:00",
+          "tree_id": "35e530d462d7bf1c68ee4b57df9c7980f3687ae4",
+          "url": "https://github.com/stacklok/mecatl/commit/9aaf5db580fc89f1fc982ecd7eb4aeffe07e9307"
+        },
+        "date": 1792685257596,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -475919,6 +475953,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792685253928,
+  "lastUpdate": 1792685258933,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
