@@ -327606,6 +327606,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792672049428,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "bf5ad2242c0509e26760d4439ffd947e546712e8",
+          "message": "fix(scheduler): record fire events under the session lease (#2426)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T09:43:19-04:00",
+          "tree_id": "f969a2444dc69445005448fbe97197a7e3502c25",
+          "url": "https://github.com/stacklok/mecatl/commit/bf5ad2242c0509e26760d4439ffd947e546712e8"
+        },
+        "date": 1792677376851,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -473875,6 +473909,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792677373785,
+  "lastUpdate": 1792677377646,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
