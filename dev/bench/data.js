@@ -327964,6 +327964,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792677376851,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b90b95f6338a2f24195b4a704f8886fe0ad363b3",
+          "message": "chore(deps): consolidate Renovate Go and Studio updates (#2472)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T09:43:53-04:00",
+          "tree_id": "1c4ff33e47a32564e1df422f1057ef5b66e6e689",
+          "url": "https://github.com/stacklok/mecatl/commit/b90b95f6338a2f24195b4a704f8886fe0ad363b3"
+        },
+        "date": 1792678109520,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -474386,6 +474420,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792678105856,
+  "lastUpdate": 1792678110671,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
