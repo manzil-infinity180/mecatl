@@ -330828,6 +330828,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792710933186,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a7376bd898f66b47ed2d5ce792311072e4b320b1",
+          "message": "build(deps): require engine v0.18.0 and pin Task in CI (#2478)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T19:45:26-04:00",
+          "tree_id": "65171b3f6a3116d99049879bf7e488108274f915",
+          "url": "https://github.com/stacklok/mecatl/commit/a7376bd898f66b47ed2d5ce792311072e4b320b1"
+        },
+        "date": 1792713447608,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -478474,6 +478508,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792713444770,
+  "lastUpdate": 1792713448348,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
