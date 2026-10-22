@@ -326890,6 +326890,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792620320495,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "003659639249e41da87c8814971b37bb02c508cc",
+          "message": "ci: remove duplicate checks and build mecated once (#2468)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T03:42:43-04:00",
+          "tree_id": "480b12bdea71c52dfaa851a4fd0996964f02629f",
+          "url": "https://github.com/stacklok/mecatl/commit/003659639249e41da87c8814971b37bb02c508cc"
+        },
+        "date": 1792655749154,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -472853,6 +472887,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792655745961,
+  "lastUpdate": 1792655749975,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
