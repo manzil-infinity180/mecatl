@@ -329754,6 +329754,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792695247421,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29541485+ChrisJBurns@users.noreply.github.com",
+            "name": "Chris Burns",
+            "username": "ChrisJBurns"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "da86ff1cf51914d68926df128538efcc219d159c",
+          "message": "feat(identitybroker): register agents and issue their credentials (#2476)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T22:01:15+01:00",
+          "tree_id": "f606b0beeb869548c6f3ddbac87fd35cb387663a",
+          "url": "https://github.com/stacklok/mecatl/commit/da86ff1cf51914d68926df128538efcc219d159c"
+        },
+        "date": 1792703657857,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -476941,6 +476975,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792703654478,
+  "lastUpdate": 1792703658774,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
