@@ -327248,6 +327248,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792655749154,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c148bd3e84606e51774043b10fa2e4b54ba84a8b",
+          "message": "chore(deps): consolidate Renovate into three dependency buckets (#2471)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T08:15:27-04:00",
+          "tree_id": "5632ac8593f0dc67a82b87a345d49d9709bb9273",
+          "url": "https://github.com/stacklok/mecatl/commit/c148bd3e84606e51774043b10fa2e4b54ba84a8b"
+        },
+        "date": 1792672049428,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -473364,6 +473398,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792672045841,
+  "lastUpdate": 1792672050112,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
