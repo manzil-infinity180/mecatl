@@ -329396,6 +329396,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792685257596,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29541485+ChrisJBurns@users.noreply.github.com",
+            "name": "Chris Burns",
+            "username": "ChrisJBurns"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "155256f26b28ae15ab9c1d51ad052d92577cfd26",
+          "message": "fix(identitybroker): address the slice 1 review follow-ups (#2473)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T19:42:24+01:00",
+          "tree_id": "3a8a56cead901e0bb3f6bc813b0fc76e44d162de",
+          "url": "https://github.com/stacklok/mecatl/commit/155256f26b28ae15ab9c1d51ad052d92577cfd26"
+        },
+        "date": 1792695247421,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -476430,6 +476464,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792695243342,
+  "lastUpdate": 1792695248550,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
