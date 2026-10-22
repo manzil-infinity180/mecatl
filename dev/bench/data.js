@@ -366636,6 +366636,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792710937152,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a7376bd898f66b47ed2d5ce792311072e4b320b1",
+          "message": "build(deps): require engine v0.18.0 and pin Task in CI (#2478)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T19:45:26-04:00",
+          "tree_id": "65171b3f6a3116d99049879bf7e488108274f915",
+          "url": "https://github.com/stacklok/mecatl/commit/a7376bd898f66b47ed2d5ce792311072e4b320b1"
+        },
+        "date": 1792713451209,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16147,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12911,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -478508,6 +478547,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792713448348,
+  "lastUpdate": 1792713451739,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
