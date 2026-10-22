@@ -366239,6 +366239,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792708851637,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "2372d24284f2ed0cc3dd10975f2ab6cd783c6f9f",
+          "message": "fix(agent): name the provider stop reason on stop-only errors (#2431)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T19:02:34-04:00",
+          "tree_id": "6bb00020cfe0bfed6df21f04042d8cbdc7db39e4",
+          "url": "https://github.com/stacklok/mecatl/commit/2372d24284f2ed0cc3dd10975f2ab6cd783c6f9f"
+        },
+        "date": 1792710937152,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16147,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12910.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -477997,6 +478036,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792710933984,
+  "lastUpdate": 1792710937926,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
