@@ -364254,6 +364254,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792683176946,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ef06193975f4713511c5293cb67b64edc8f31bf9",
+          "message": "feat(mecak8s): add scheduler.enabled chart value (#2427)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T11:33:40-04:00",
+          "tree_id": "86812b338bec843ab9861853d2f72dafc73e95dc",
+          "url": "https://github.com/stacklok/mecatl/commit/ef06193975f4713511c5293cb67b64edc8f31bf9"
+        },
+        "date": 1792684016884,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16148.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12913,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -475442,6 +475481,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792684012001,
+  "lastUpdate": 1792684017698,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
