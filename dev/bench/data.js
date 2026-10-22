@@ -328322,6 +328322,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792678109520,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29541485+ChrisJBurns@users.noreply.github.com",
+            "name": "Chris Burns",
+            "username": "ChrisJBurns"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ae8b93b2e82449b964add8683bc36c40854377ef",
+          "message": "feat(identitybroker): add broker sessions to the real identity broker and run it in mecak8s (#2465)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T16:21:46+01:00",
+          "tree_id": "dd4dfdd79b87aaa5f7cc79a849e589212ffb6433",
+          "url": "https://github.com/stacklok/mecatl/commit/ae8b93b2e82449b964add8683bc36c40854377ef"
+        },
+        "date": 1792683173117,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -474897,6 +474931,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792683170308,
+  "lastUpdate": 1792683173765,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
