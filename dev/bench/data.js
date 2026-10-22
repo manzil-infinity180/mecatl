@@ -362269,6 +362269,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792620324362,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "003659639249e41da87c8814971b37bb02c508cc",
+          "message": "ci: remove duplicate checks and build mecated once (#2468)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T03:42:43-04:00",
+          "tree_id": "480b12bdea71c52dfaa851a4fd0996964f02629f",
+          "url": "https://github.com/stacklok/mecatl/commit/003659639249e41da87c8814971b37bb02c508cc"
+        },
+        "date": 1792655753405,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16145.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12909,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -472887,6 +472926,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792655749975,
+  "lastUpdate": 1792655754433,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
