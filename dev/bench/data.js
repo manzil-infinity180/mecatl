@@ -363063,6 +363063,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792672055111,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "bf5ad2242c0509e26760d4439ffd947e546712e8",
+          "message": "fix(scheduler): record fire events under the session lease (#2426)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-22T09:43:19-04:00",
+          "tree_id": "f969a2444dc69445005448fbe97197a7e3502c25",
+          "url": "https://github.com/stacklok/mecatl/commit/bf5ad2242c0509e26760d4439ffd947e546712e8"
+        },
+        "date": 1792677380758,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16144.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12909.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -473909,6 +473948,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792677377646,
+  "lastUpdate": 1792677381497,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
