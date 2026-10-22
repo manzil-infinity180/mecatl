@@ -363460,6 +363460,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792677380758,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b90b95f6338a2f24195b4a704f8886fe0ad363b3",
+          "message": "chore(deps): consolidate Renovate Go and Studio updates (#2472)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T09:43:53-04:00",
+          "tree_id": "1c4ff33e47a32564e1df422f1057ef5b66e6e689",
+          "url": "https://github.com/stacklok/mecatl/commit/b90b95f6338a2f24195b4a704f8886fe0ad363b3"
+        },
+        "date": 1792678114098,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16155,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12918.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -474420,6 +474459,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792678110671,
+  "lastUpdate": 1792678115317,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
