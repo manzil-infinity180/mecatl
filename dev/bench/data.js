@@ -365048,6 +365048,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792685262231,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29541485+ChrisJBurns@users.noreply.github.com",
+            "name": "Chris Burns",
+            "username": "ChrisJBurns"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "155256f26b28ae15ab9c1d51ad052d92577cfd26",
+          "message": "fix(identitybroker): address the slice 1 review follow-ups (#2473)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T19:42:24+01:00",
+          "tree_id": "3a8a56cead901e0bb3f6bc813b0fc76e44d162de",
+          "url": "https://github.com/stacklok/mecatl/commit/155256f26b28ae15ab9c1d51ad052d92577cfd26"
+        },
+        "date": 1792695253340,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16124,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12889,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 794,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -476464,6 +476503,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792695248550,
+  "lastUpdate": 1792695254212,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
