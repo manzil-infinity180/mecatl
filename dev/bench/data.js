@@ -365842,6 +365842,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792703661915,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29541485+ChrisJBurns@users.noreply.github.com",
+            "name": "Chris Burns",
+            "username": "ChrisJBurns"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "030261aa8219f4ab9de8c2ba6e814f9c54b94442",
+          "message": "fix(identitybroker): address the agent registration review follow-ups (#2477)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T23:29:25+01:00",
+          "tree_id": "778b8d5fd96a0ba1a796ddc67c30f8821e84793b",
+          "url": "https://github.com/stacklok/mecatl/commit/030261aa8219f4ab9de8c2ba6e814f9c54b94442"
+        },
+        "date": 1792708851637,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16130,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12895,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -477486,6 +477525,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792708847942,
+  "lastUpdate": 1792708852734,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
