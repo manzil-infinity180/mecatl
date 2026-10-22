@@ -362666,6 +362666,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792655753405,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c148bd3e84606e51774043b10fa2e4b54ba84a8b",
+          "message": "chore(deps): consolidate Renovate into three dependency buckets (#2471)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T08:15:27-04:00",
+          "tree_id": "5632ac8593f0dc67a82b87a345d49d9709bb9273",
+          "url": "https://github.com/stacklok/mecatl/commit/c148bd3e84606e51774043b10fa2e4b54ba84a8b"
+        },
+        "date": 1792672055111,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16147,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12912,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -473398,6 +473437,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792672050112,
+  "lastUpdate": 1792672055862,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
