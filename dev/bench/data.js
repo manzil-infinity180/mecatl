@@ -365445,6 +365445,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792695253340,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29541485+ChrisJBurns@users.noreply.github.com",
+            "name": "Chris Burns",
+            "username": "ChrisJBurns"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "da86ff1cf51914d68926df128538efcc219d159c",
+          "message": "feat(identitybroker): register agents and issue their credentials (#2476)\n\nCo-authored-by: Mecatl <noreply@mecatl.dev>",
+          "timestamp": "2026-10-22T22:01:15+01:00",
+          "tree_id": "f606b0beeb869548c6f3ddbac87fd35cb387663a",
+          "url": "https://github.com/stacklok/mecatl/commit/da86ff1cf51914d68926df128538efcc219d159c"
+        },
+        "date": 1792703661915,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16149.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12913,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -476975,6 +477014,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792703658774,
+  "lastUpdate": 1792703662815,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
