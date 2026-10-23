@@ -331544,6 +331544,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792751802373,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ed3116084296dec6b86a2b9f2b5b3cdf47c6a605",
+          "message": "docs(engine): record the Go 1.27 floor without a patch version (#2481)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-23T06:25:58-04:00",
+          "tree_id": "57cf5f0a493e82a464075fdb6d514798c8f37f16",
+          "url": "https://github.com/stacklok/mecatl/commit/ed3116084296dec6b86a2b9f2b5b3cdf47c6a605"
+        },
+        "date": 1792752546762,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -479496,6 +479530,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792752543394,
+  "lastUpdate": 1792752547963,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
