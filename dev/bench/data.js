@@ -367430,6 +367430,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792751806770,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ed3116084296dec6b86a2b9f2b5b3cdf47c6a605",
+          "message": "docs(engine): record the Go 1.27 floor without a patch version (#2481)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-23T06:25:58-04:00",
+          "tree_id": "57cf5f0a493e82a464075fdb6d514798c8f37f16",
+          "url": "https://github.com/stacklok/mecatl/commit/ed3116084296dec6b86a2b9f2b5b3cdf47c6a605"
+        },
+        "date": 1792752550927,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16146,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12911,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -479530,6 +479569,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792752547963,
+  "lastUpdate": 1792752552073,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
