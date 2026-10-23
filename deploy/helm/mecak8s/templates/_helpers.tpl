@@ -84,6 +84,15 @@ mounted
 {{- if or (eq (trim $scope) "") (not (regexMatch "^[!-~]+$" $scope)) (contains "," $scope) (contains "\"" $scope) (contains "\\" $scope) -}}{{ fail (printf "oidc.scopes entry %q is invalid" $scope) }}{{- end -}}
 {{- end -}}
 {{- end -}}
+{{- if .Values.oidc.ownerFromSubID -}}
+{{- if not .Values.oidc.enabled -}}{{ fail "oidc.ownerFromSubID requires oidc.enabled=true" }}{{- end -}}
+{{- if not .Values.oidc.acceptedClientIDs -}}{{ fail "oidc.ownerFromSubID requires at least one oidc.acceptedClientIDs entry" }}{{- end -}}
+{{- else if .Values.oidc.acceptedClientIDs -}}
+{{- fail "oidc.acceptedClientIDs requires oidc.ownerFromSubID=true" -}}
+{{- end -}}
+{{- range $clientID := .Values.oidc.acceptedClientIDs -}}
+{{- if or (eq (trim $clientID) "") (ne (trim $clientID) $clientID) (contains "," $clientID) (regexMatch "[\\x00-\\x1f\\x7f-\\x9f]" $clientID) (regexMatch "[\\p{Cf}]" $clientID) -}}{{ fail (printf "oidc.acceptedClientIDs entry %q must be non-blank and contain no surrounding spaces, commas, control, or Unicode format characters" $clientID) }}{{- end -}}
+{{- end -}}
 {{- if .Values.oidc.enabled -}}
 {{- $_ := required "oidc.issuer is required when oidc.enabled is true" .Values.oidc.issuer -}}
 {{- $_ := required "oidc.audience is required when oidc.enabled is true" .Values.oidc.audience -}}

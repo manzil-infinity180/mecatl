@@ -270,7 +270,7 @@ Verify the [AuditEvent profile](audit.md#auditevent-profile) through the real to
 
 Test the checks at each hop:
 
-- mecak8s rejects each failing step (1) check, returning 401 `invalid_token` for checks 1–7 and 403 `not_session_owner` for check 8.
+- mecak8s rejects each failing step (1) check, returning 401 `invalid_token` for checks 1–7 and, for check 8, the 404 `session_not_found` an absent session gets.
 - The broker rejects a legacy ServiceAccount token, a token with the Kubernetes API server's audience, a token whose `exp - iat` exceeds the maximum, and a ServiceAccount not on the allowlist.
 - SVID validation rejects a platform SVID with the broker's audience (wrong trust domain and bundle), a header without `kid`, an `aud` with two values, a disallowed `alg`, and an `exp` beyond the maximum lifetime.
 - Registration rejects names over 63 bytes, nesting past 8 child levels, `.` and `..`, and a parentless registration of a definition that is not root-eligible.

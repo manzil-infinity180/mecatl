@@ -34,7 +34,9 @@ same caller. Do not expose that posture as a multi-user endpoint.
 
 ## What identity means
 
-The durable owner is the verified `(issuer, subject)` pair from the token:
+The durable owner is a verified `(issuer, subject)` pair: by default the token's
+own `iss` and `sub`, or the pair inside its `sub_id` claim when
+[owner from `sub_id`](#own-resources-by-the-sub_id-identity) is on:
 
 ```json
 {
@@ -104,6 +106,39 @@ outage, the last-good keys may continue to work until the staleness limit; after
 that the service returns `503` until it can refresh. A malformed, expired,
 wrong-issuer, or wrong-audience token returns `401`. The cache is not persisted,
 so a restarted process fetches keys again.
+
+## Own resources by the `sub_id` identity
+
+When users sign in through an authorization server that federates to your
+company IdP, the token's own `iss` and `sub` name the authorization server and
+its subject for the user. Set `--oidc-owner-from-sub-id` to key owners by the
+company IdP identity the token carries instead, in its `sub_id` claim (an
+RFC 9493 `iss_sub` subject identifier):
+
+```sh
+mecated serve \
+  --oidc-issuer https://auth.example.com/as \
+  --oidc-audience https://mecatl.example.com/api \
+  --oidc-owner-from-sub-id \
+  --oidc-accepted-client-ids mecatui,studio \
+  --workspace /srv/mecatl/workspace
+```
+
+Set `--oidc-issuer` to the authorization server. With this option, the server
+rejects a token with `401` unless its `typ` header is `at+jwt` or
+`application/at+jwt` (an RFC 9068 access token), its `client_id` claim is listed
+in `--oidc-accepted-client-ids`, and its `sub_id` claim has format `iss_sub`
+with a non-empty `iss` and `sub`. The owner is that `iss` and `sub`.
+
+When the authorization server's upstream is the IdP the server validated
+directly before, existing sessions, schedules, memory, and other owned data
+keep matching their owners without migration. If the upstream IdP or its
+issuer URL differs, existing data stays with the previous owner identities and
+is inaccessible to the new ones.
+
+The server trusts `sub_id` in every token that passes these checks. The
+authorization server must issue `sub_id` only from a sign-in it performed and
+must map each company identity to exactly one of its own subjects.
 
 ## Protected-resource discovery (RFC 9728)
 
