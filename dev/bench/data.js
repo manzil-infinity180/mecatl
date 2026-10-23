@@ -368224,6 +368224,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792754819003,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "radoslav@stacklok.com",
+            "name": "Radoslav Dimitrov",
+            "username": "rdimitrov"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "82cd4697f82072732465c76f81a526294e449778",
+          "message": "build(deps): declare go 1.27 in every module (#2484)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-23T08:17:38-04:00",
+          "tree_id": "da69113e087eb05a055c3a79466be0a910982651",
+          "url": "https://github.com/stacklok/mecatl/commit/82cd4697f82072732465c76f81a526294e449778"
+        },
+        "date": 1792758605164,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16144.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12910,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -480552,6 +480591,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792758601477,
+  "lastUpdate": 1792758605746,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
