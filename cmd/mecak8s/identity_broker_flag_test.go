@@ -49,6 +49,10 @@ func TestOwnerFromSubIDMisconfigurationRefusesStartup(t *testing.T) {
 		"without client IDs":            slices.Concat(oidc, []string{"--oidc-owner-from-sub-id"}),
 		"client IDs without the option": slices.Concat(oidc, []string{"--oidc-accepted-client-ids=mecatui"}),
 		"without issuer":                {"--mock", "--oidc-owner-from-sub-id", "--oidc-accepted-client-ids=mecatui"},
+		"advertised client ID not accepted": slices.Concat(oidc, []string{
+			"--oidc-owner-from-sub-id", "--oidc-accepted-client-ids=studio",
+			"--oidc-resource=https://mecatl.example", "--oidc-client-id=mecatui",
+		}),
 	} {
 		t.Run(name, func(t *testing.T) {
 			cfg, err := parseFlags(args)

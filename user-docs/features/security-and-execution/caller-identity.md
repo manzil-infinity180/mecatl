@@ -128,13 +128,34 @@ Set `--oidc-issuer` to the authorization server. With this option, the server
 rejects a token with `401` unless its `typ` header is `at+jwt` or
 `application/at+jwt` (an RFC 9068 access token), its `client_id` claim is listed
 in `--oidc-accepted-client-ids`, and its `sub_id` claim has format `iss_sub`
-with a non-empty `iss` and `sub`. The owner is that `iss` and `sub`.
+with a non-empty `iss` and `sub`. The owner is that `iss` and `sub`. When
+`--oidc-client-id` is set, the server refuses to start unless that client ID is
+also listed in `--oidc-accepted-client-ids`.
 
-When the authorization server's upstream is the IdP the server validated
-directly before, existing sessions, schedules, memory, and other owned data
-keep matching their owners without migration. If the upstream IdP or its
-issuer URL differs, existing data stays with the previous owner identities and
-is inaccessible to the new ones.
+Existing sessions, schedules, memory, and other owned data keep matching their
+owners only if, for each user, the authorization server's upstream IdP returns
+the same issuer and the same `sub` that the server validated directly before.
+The same IdP does not guarantee the same `sub`. Some IdPs issue pairwise
+subjects per registered application; for example, Microsoft Entra ID's `sub`
+differs for each application. The authorization server is a new application
+registration, so with such an IdP every user's `sub` changes. When either value
+differs, existing data stays with the previous owner identities and is
+inaccessible to the new ones; remap owners before you enable the option. Before
+switching, sign in through the authorization server and confirm that the
+`sub_id` claim carries the same `iss` and `sub` as a token the server accepts
+today.
+
+Settings that name exact principals match the `sub_id` identity once the option
+is on, so list the IdP's issuer and subject there, not the authorization
+server's:
+
+- `storage_management.principals` in `settings.yaml` matches issuer and subject.
+- `mecak8s` `--execution-allowed-subjects` (Helm `execution.allowedSubjects`)
+  matches the subject.
+
+The server cannot detect a changed `sub` or a principal setting that still
+names the authorization server's identity at startup. Either mismatch appears
+only as missing data or refused access after users sign in.
 
 The server trusts `sub_id` in every token that passes these checks. The
 authorization server must issue `sub_id` only from a sign-in it performed and

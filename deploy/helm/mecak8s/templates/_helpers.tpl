@@ -87,6 +87,7 @@ mounted
 {{- if .Values.oidc.ownerFromSubID -}}
 {{- if not .Values.oidc.enabled -}}{{ fail "oidc.ownerFromSubID requires oidc.enabled=true" }}{{- end -}}
 {{- if not .Values.oidc.acceptedClientIDs -}}{{ fail "oidc.ownerFromSubID requires at least one oidc.acceptedClientIDs entry" }}{{- end -}}
+{{- if and .Values.oidc.clientID (not (has .Values.oidc.clientID .Values.oidc.acceptedClientIDs)) -}}{{ fail (printf "oidc.clientID %q must be listed in oidc.acceptedClientIDs when oidc.ownerFromSubID is true" .Values.oidc.clientID) }}{{- end -}}
 {{- else if .Values.oidc.acceptedClientIDs -}}
 {{- fail "oidc.acceptedClientIDs requires oidc.ownerFromSubID=true" -}}
 {{- end -}}

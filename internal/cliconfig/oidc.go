@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -306,6 +307,10 @@ func OIDCValidator(ctx context.Context, c OIDCConfig) (server.PrincipalValidator
 			return nil, fmt.Errorf("%w: --oidc-owner-from-sub-id and --oidc-accepted-client-ids require --oidc-issuer", ErrOIDCMisconfigured)
 		}
 		return nil, nil
+	}
+	// mecatui signs in as the advertised client; its tokens would all be refused.
+	if c.OwnerFromSubID && c.ClientID != "" && !slices.Contains(c.AcceptedClientIDs, c.ClientID) {
+		return nil, fmt.Errorf("%w: --oidc-client-id %q must be listed in --oidc-accepted-client-ids when --oidc-owner-from-sub-id is set", ErrOIDCMisconfigured, c.ClientID)
 	}
 	if c.AllowPrivateHTTPSIssuer && c.TrustedCAFile == "" {
 		return nil, fmt.Errorf("%w: --oidc-allow-private-https-issuer requires --oidc-ca-cert-file", ErrOIDCMisconfigured)

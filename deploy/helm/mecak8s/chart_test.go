@@ -556,7 +556,7 @@ func TestMecak8sHelmChart_ProtectedResourceProfile(t *testing.T) {
 
 func TestMecak8sHelmChart_OwnerFromSubID(t *testing.T) {
 	base := []string{"template", "owner", ".", "--set", "mockProvider=true,permissionMode=yolo", "--set", "redis.local.enabled=true", "--set", "oidc.enabled=true,oidc.issuer=https://as1.example.com,oidc.audience=mecatl"}
-	rendered, err := helm(t, append(slices.Clone(base), "--set", "oidc.ownerFromSubID=true", "--set", "oidc.acceptedClientIDs={mecatui,studio}")...)
+	rendered, err := helm(t, append(slices.Clone(base), "--set", "oidc.ownerFromSubID=true", "--set", "oidc.acceptedClientIDs={mecatui,studio}", "--set", "oidc.resource=https://mecatl.example.com,oidc.clientID=studio")...)
 	if err != nil {
 		t.Fatalf("render owner from sub_id: %v\n%s", err, rendered)
 	}
@@ -588,6 +588,10 @@ func TestMecak8sHelmChart_OwnerFromSubID(t *testing.T) {
 		"comma in client ID":        {[]string{"oidc.ownerFromSubID=true", "oidc.acceptedClientIDs[0]=mecatui\\,studio"}, badEntry},
 		"padded client ID":          {[]string{"oidc.ownerFromSubID=true", "oidc.acceptedClientIDs[0]= mecatui"}, badEntry},
 		"control char in client ID": {[]string{"oidc.ownerFromSubID=true", "oidc.acceptedClientIDs[0]=mecatui\x01"}, badEntry},
+		"advertised client ID not accepted": {
+			[]string{"oidc.ownerFromSubID=true", "oidc.acceptedClientIDs={studio}", "oidc.resource=https://mecatl.example.com,oidc.clientID=mecatui"},
+			`oidc.clientID "mecatui" must be listed in oidc.acceptedClientIDs when oidc.ownerFromSubID is true`,
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			args := slices.Clone(base)

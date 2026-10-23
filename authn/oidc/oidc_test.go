@@ -556,6 +556,12 @@ func TestOwnerFromSubIDConfig(t *testing.T) {
 	}
 }
 
+// Validator is published; adding a non-comparable field would break callers
+// that compare it. This fails to compile if Validator stops being comparable.
+func requireComparable[T comparable]() {}
+
+var _ = requireComparable[Validator]
+
 func TestValidatorOptionalAudiencePreservesConfiguredAudienceBinding(t *testing.T) {
 	fixture := newJWKSFixture(t)
 

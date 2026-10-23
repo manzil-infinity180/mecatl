@@ -106,7 +106,13 @@ type Validator struct {
 	healthClient   *http.Client
 	healthURL      string
 	closeOnce      sync.Once
-	// acceptedClientIDs is non-empty exactly when OwnerFromSubID is on.
+	// subIDOwner is non-nil exactly when OwnerFromSubID is on. It is a pointer
+	// so Validator stays comparable.
+	subIDOwner *subIDOwner
+}
+
+// subIDOwner holds the OwnerFromSubID settings; acceptedClientIDs is non-empty.
+type subIDOwner struct {
 	acceptedClientIDs []string
 }
 
@@ -157,9 +163,13 @@ func NewValidator(ctx context.Context, cfg Config) (*Validator, error) {
 			return nil, fmt.Errorf("%w: %v", ErrInvalidConfig, err)
 		}
 	}
+	out := &Validator{validator: validator, internalClient: internalClient, healthClient: healthClient, healthURL: cfg.JWKSURI}
 	// validateOwnerFromSubID guarantees the client list is non-empty exactly
 	// when OwnerFromSubID is on.
-	return &Validator{validator: validator, internalClient: internalClient, healthClient: healthClient, healthURL: cfg.JWKSURI, acceptedClientIDs: slices.Clone(cfg.AcceptedClientIDs)}, nil
+	if cfg.OwnerFromSubID {
+		out.subIDOwner = &subIDOwner{acceptedClientIDs: slices.Clone(cfg.AcceptedClientIDs)}
+	}
+	return out, nil
 }
 
 // validateOwnerFromSubID requires a non-empty, well-formed client list exactly
@@ -246,10 +256,10 @@ func (v *Validator) Validate(ctx context.Context, bearer string) (*session.Princ
 	if out == nil {
 		return nil, fmt.Errorf("%w: verified claims have no issuer or subject", ErrInvalidToken)
 	}
-	if len(v.acceptedClientIDs) == 0 {
+	if v.subIDOwner == nil {
 		return out, nil
 	}
-	if clientID, ok := principal.Claims["client_id"].(string); !ok || !slices.Contains(v.acceptedClientIDs, clientID) {
+	if clientID, ok := principal.Claims["client_id"].(string); !ok || !slices.Contains(v.subIDOwner.acceptedClientIDs, clientID) {
 		return nil, subIDRejection("client_id claim is missing or not an accepted client")
 	}
 	identity := issSubIdentifier(principal.Claims["sub_id"])

@@ -129,7 +129,8 @@ func TestOIDCOwnerFromSubIDFlags(t *testing.T) {
 
 // TestOIDCOwnerFromSubIDMisconfigurationFailsStartup pins that every
 // misconfiguration is a fatal ErrOIDCMisconfigured from OIDCValidator: the
-// missing-issuer case is caught here, the pairing with client IDs by the real
+// missing-issuer and unaccepted advertised client ID cases are caught here, the
+// pairing with client IDs by the real
 // authn/oidc constructor before it contacts the issuer.
 func TestOIDCOwnerFromSubIDMisconfigurationFailsStartup(t *testing.T) {
 	const issuer = "https://idp.example.invalid"
@@ -142,6 +143,11 @@ func TestOIDCOwnerFromSubIDMisconfigurationFailsStartup(t *testing.T) {
 		{name: "client IDs without issuer", cfg: OIDCConfig{AcceptedClientIDs: []string{"mecatui"}}, want: "require --oidc-issuer"},
 		{name: "owner from sub_id without client IDs", cfg: OIDCConfig{Issuer: issuer, Audience: "mecatl", OwnerFromSubID: true}, want: "requires accepted client IDs"},
 		{name: "client IDs without owner from sub_id", cfg: OIDCConfig{Issuer: issuer, Audience: "mecatl", AcceptedClientIDs: []string{"mecatui"}}, want: "require owner from sub_id"},
+		{
+			name: "advertised client ID not accepted",
+			cfg:  OIDCConfig{Issuer: issuer, Audience: "mecatl", Resource: "https://mecatl.example", ClientID: "mecatui", OwnerFromSubID: true, AcceptedClientIDs: []string{"studio"}},
+			want: `--oidc-client-id "mecatui" must be listed in --oidc-accepted-client-ids`,
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			v, err := OIDCValidator(context.Background(), tc.cfg)
@@ -150,9 +156,9 @@ func TestOIDCOwnerFromSubIDMisconfigurationFailsStartup(t *testing.T) {
 			}
 		})
 	}
-	ok := OIDCConfig{Issuer: issuer, Audience: "mecatl", OwnerFromSubID: true, AcceptedClientIDs: []string{"mecatui"}}
+	ok := OIDCConfig{Issuer: issuer, Audience: "mecatl", Resource: "https://mecatl.example", ClientID: "mecatui", OwnerFromSubID: true, AcceptedClientIDs: []string{"studio", "mecatui"}}
 	ok.NewValidator = func(_ context.Context, c OIDCConfig) (server.PrincipalValidator, error) {
-		if !c.OwnerFromSubID || len(c.AcceptedClientIDs) != 1 {
+		if !c.OwnerFromSubID || len(c.AcceptedClientIDs) != 2 {
 			t.Fatalf("constructor saw %#v", c)
 		}
 		return fakeValidator{}, nil
