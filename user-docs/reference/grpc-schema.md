@@ -2513,7 +2513,7 @@ backend locator, exact EnvironmentRef, or reusable selector.
 |---|---|---|---|---|
 | `kind` | `string` |  |  |  |
 | `label` | `string` |  |  |  |
-| `branch` | `string` |  |  |  |
+| `branch` | `string` |  |  | branch is the short branch name (for example &#34;feat/x&#34;); empty for a detached or unknown HEAD. |
 | `revision` | `string` |  |  |  |
 
 
@@ -3984,8 +3984,8 @@ caller/source scoped, and accepted only by ClearSession or ForkSession.
 |---|---|---|---|---|
 | `selector` | `string` |  |  |  |
 | `kind` | `string` |  |  |  |
-| `label` | `string` |  |  |  |
-| `branch` | `string` |  |  |  |
+| `label` | `string` |  |  | label is display text: the short branch name, or &#34;Detached worktree&#34;. |
+| `branch` | `string` |  |  | branch is the short branch name (for example &#34;feat/x&#34;); empty for a detached HEAD. |
 | `revision` | `string` |  |  |  |
 | `bare` | `bool` |  |  |  |
 

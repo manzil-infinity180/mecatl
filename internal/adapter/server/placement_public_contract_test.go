@@ -67,7 +67,11 @@ func adrPlacementBinding() PlacementBinding {
 type adrWorktrees struct{}
 
 func (adrWorktrees) List(context.Context, string) ([]Worktree, error) {
-	return []Worktree{{Path: adrPrivateRoot, Branch: "main", Head: "abc123"}, {Path: "/srv/private/feature", Branch: "feature", Head: "def456"}}, nil
+	return []Worktree{
+		{Path: adrPrivateRoot, Branch: "main", Head: "abc123"},
+		{Path: "/srv/private/feature", Branch: "feature", Head: "def456"},
+		{Path: "/srv/private/nested", Branch: "feat/x", Head: "def456"},
+	}, nil
 }
 
 func (p adrPlacementProvider) ListWorktrees(_ context.Context, req PlacementDiscoveryRequest) ([]ScopedWorktree, error) {
@@ -178,7 +182,7 @@ func TestDiscoveryIsSessionScopedAndOwnerAuthorized(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(resp.GetWorktrees()) != 2 || resp.GetWorktrees()[0].GetSelector() == "" {
+	if len(resp.GetWorktrees()) != 3 || resp.GetWorktrees()[0].GetSelector() == "" {
 		t.Fatalf("worktrees = %+v", resp.GetWorktrees())
 	}
 	for _, wt := range resp.GetWorktrees() {
@@ -213,6 +217,48 @@ func TestClearSessionCreatesEmptyInheritedSuccessor(t *testing.T) {
 		t.Fatalf("clear placement metadata = %+v", got)
 	}
 	if strings.Contains(cleared.String(), adrPrivateRoot) {
+		t.Fatalf("private path escaped: %v", cleared)
+	}
+}
+
+func TestNamespacedBranchSurvivesDiscoveryAndPlacement(t *testing.T) {
+	svc := newPlacementContractService(t)
+	h := NewHarnessServer(svc)
+	created, err := h.CreateSession(context.Background(), &mecatlv1.CreateSessionRequest{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := h.ListWorktrees(context.Background(), &mecatlv1.ListWorktreesRequest{SessionId: created.GetSessionId()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var selector string
+	for _, wt := range resp.GetWorktrees() {
+		if wt.GetBranch() == "feat/x" {
+			if wt.GetLabel() != "feat/x" {
+				t.Fatalf("label = %q, want feat/x", wt.GetLabel())
+			}
+			selector = wt.GetSelector()
+		}
+	}
+	if selector == "" {
+		t.Fatalf("namespaced branch missing from %+v", resp.GetWorktrees())
+	}
+	cleared, err := h.ClearSession(context.Background(), &mecatlv1.ClearSessionRequest{SourceSessionId: created.GetSessionId(), WorktreeSelector: &selector})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := cleared.GetPlacement(); got.GetLabel() != "feat/x" || got.GetBranch() != "feat/x" {
+		t.Fatalf("clear placement metadata = %+v", got)
+	}
+	sess, err := svc.GetSession(context.Background(), session.SessionID(cleared.GetSessionId()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sess.Placement.Label != "feat/x" || sess.Placement.Branch != "feat/x" {
+		t.Fatalf("session placement = %+v", sess.Placement)
+	}
+	if strings.Contains(cleared.String(), "/srv/") {
 		t.Fatalf("private path escaped: %v", cleared)
 	}
 }

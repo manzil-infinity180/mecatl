@@ -133,8 +133,8 @@ func (s *Service) ListWorktreesForSession(ctx context.Context, id session.Sessio
 		if !safePlacementText(current[i].Selector, maxPlacementIdentityRunes) || strings.ContainsAny(current[i].Selector, `/\\`) {
 			return nil, ErrInvalidPlacementBinding
 		}
-		current[i].Label = sanitizePlacementDisplay(current[i].Label, maxPlacementNameRunes)
-		current[i].Branch = sanitizePlacementDisplay(current[i].Branch, maxPlacementNameRunes)
+		current[i].Label = sanitizePlacementLabel(current[i].Label, current[i].Branch)
+		current[i].Branch = sanitizePlacementBranch(current[i].Branch)
 		current[i].Revision = sanitizePlacementDisplay(current[i].Revision, maxPlacementIdentityRunes)
 	}
 	return current, nil

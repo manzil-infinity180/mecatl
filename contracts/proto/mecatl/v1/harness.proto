@@ -966,6 +966,8 @@ message CreateSessionResponse {
 message PlacementMetadata {
   string kind = 1;
   string label = 2;
+  // branch is the short branch name (for example "feat/x"); empty for a
+  // detached or unknown HEAD.
   string branch = 3;
   string revision = 4;
 }
@@ -3154,7 +3156,10 @@ message ListCommandsResponse {
 message Worktree {
   string selector = 1;
   string kind = 2;
+  // label is display text: the short branch name, or "Detached worktree".
   string label = 3;
+  // branch is the short branch name (for example "feat/x"); empty for a
+  // detached HEAD.
   string branch = 4;
   string revision = 5;
   bool bare = 6;

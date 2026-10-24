@@ -6,6 +6,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -479,5 +480,44 @@ func TestInvariant_placement_display_rejects_path_like_metadata(t *testing.T) {
 	}
 	if got := sanitizePlacementDisplay("feature-name", maxPlacementNameRunes); got != "feature-name" {
 		t.Fatalf("safe display = %q", got)
+	}
+}
+
+func TestPlacementBranchDisplayKeepsOnlyWellFormedBranchNames(t *testing.T) {
+	for _, value := range []string{"main", "feat", "feat/x", "user/a.b-c", "release/1.2/hotfix"} {
+		if got := sanitizePlacementBranch(value); got != value {
+			t.Errorf("sanitizePlacementBranch(%q) = %q, want unchanged", value, got)
+		}
+	}
+	for _, value := range []string{
+		"", "/etc/passwd", "feat/", "../x", "a/../b", "a//b", `C:\x`, "C:foo", `a\b`,
+		".hidden/x", "x/.y", "x.lock", "x/y.lock", "x.", "-x", "@", "a@{1}", "a b", "a~1", "a^", "a?", "a*", "a[b",
+	} {
+		if got := sanitizePlacementBranch(value); got != "" {
+			t.Errorf("sanitizePlacementBranch(%q) = %q, want empty", value, got)
+		}
+	}
+	if got := sanitizePlacementBranch("fe\u200bat/x\n"); got != "feat/x" {
+		t.Errorf("format and control runes not stripped: %q", got)
+	}
+	if got := sanitizePlacementBranch(strings.Repeat("a", maxPlacementNameRunes+10)); len([]rune(got)) != maxPlacementNameRunes {
+		t.Errorf("branch not capped: %d runes", len([]rune(got)))
+	}
+}
+
+func TestPlacementLabelRelaxesPathGuardOnlyForTheBranch(t *testing.T) {
+	if got := sanitizePlacementLabel("feat/x", "feat/x"); got != "feat/x" {
+		t.Errorf("branch label = %q, want feat/x", got)
+	}
+	if got := sanitizePlacementLabel("Primary repository", "feat/x"); got != "Primary repository" {
+		t.Errorf("free-form label = %q", got)
+	}
+	for _, label := range []string{"safe/segment", "/srv/private/x"} {
+		if got := sanitizePlacementLabel(label, "feat/x"); got != "" {
+			t.Errorf("non-branch label %q = %q, want empty", label, got)
+		}
+	}
+	if got := sanitizePlacementLabel("/srv/private/x", "/srv/private/x"); got != "" {
+		t.Errorf("path-shaped branch label = %q, want empty", got)
 	}
 }

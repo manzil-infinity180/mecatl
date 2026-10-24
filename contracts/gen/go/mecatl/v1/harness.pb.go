@@ -2540,11 +2540,13 @@ func (x *CreateSessionResponse) GetResolvedAgentDefinitionName() string {
 // PlacementMetadata is safe display data. It never contains a filesystem path,
 // backend locator, exact EnvironmentRef, or reusable selector.
 type PlacementMetadata struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	Label         string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
-	Branch        string                 `protobuf:"bytes,3,opt,name=branch,proto3" json:"branch,omitempty"`
-	Revision      string                 `protobuf:"bytes,4,opt,name=revision,proto3" json:"revision,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Kind  string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	Label string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
+	// branch is the short branch name (for example "feat/x"); empty for a
+	// detached or unknown HEAD.
+	Branch        string `protobuf:"bytes,3,opt,name=branch,proto3" json:"branch,omitempty"`
+	Revision      string `protobuf:"bytes,4,opt,name=revision,proto3" json:"revision,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -13173,13 +13175,16 @@ func (x *ListCommandsResponse) GetCommands() []*Command {
 // Worktree is one display-safe eligible placement choice. Selector is opaque,
 // caller/source scoped, and accepted only by ClearSession or ForkSession.
 type Worktree struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Selector      string                 `protobuf:"bytes,1,opt,name=selector,proto3" json:"selector,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
-	Label         string                 `protobuf:"bytes,3,opt,name=label,proto3" json:"label,omitempty"`
-	Branch        string                 `protobuf:"bytes,4,opt,name=branch,proto3" json:"branch,omitempty"`
-	Revision      string                 `protobuf:"bytes,5,opt,name=revision,proto3" json:"revision,omitempty"`
-	Bare          bool                   `protobuf:"varint,6,opt,name=bare,proto3" json:"bare,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Selector string                 `protobuf:"bytes,1,opt,name=selector,proto3" json:"selector,omitempty"`
+	Kind     string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// label is display text: the short branch name, or "Detached worktree".
+	Label string `protobuf:"bytes,3,opt,name=label,proto3" json:"label,omitempty"`
+	// branch is the short branch name (for example "feat/x"); empty for a
+	// detached HEAD.
+	Branch        string `protobuf:"bytes,4,opt,name=branch,proto3" json:"branch,omitempty"`
+	Revision      string `protobuf:"bytes,5,opt,name=revision,proto3" json:"revision,omitempty"`
+	Bare          bool   `protobuf:"varint,6,opt,name=bare,proto3" json:"bare,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

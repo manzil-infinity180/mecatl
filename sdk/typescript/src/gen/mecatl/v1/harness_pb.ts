@@ -1045,6 +1045,9 @@ export type PlacementMetadata = Message<"mecatl.v1.PlacementMetadata"> & {
   label: string;
 
   /**
+   * branch is the short branch name (for example "feat/x"); empty for a
+   * detached or unknown HEAD.
+   *
    * @generated from field: string branch = 3;
    */
   branch: string;
@@ -7167,11 +7170,16 @@ export type Worktree = Message<"mecatl.v1.Worktree"> & {
   kind: string;
 
   /**
+   * label is display text: the short branch name, or "Detached worktree".
+   *
    * @generated from field: string label = 3;
    */
   label: string;
 
   /**
+   * branch is the short branch name (for example "feat/x"); empty for a
+   * detached HEAD.
+   *
    * @generated from field: string branch = 4;
    */
   branch: string;

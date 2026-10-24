@@ -924,13 +924,42 @@ func safePlacementText(value string, maxRunes int) bool {
 func canonicalPlacementMetadata(binding PlacementBinding) session.PlacementMetadata {
 	return session.PlacementMetadata{
 		Kind:     sanitizePlacementDisplay(string(binding.Ref.Kind), maxPlacementKindRunes),
-		Label:    sanitizePlacementDisplay(binding.Metadata.Label, maxPlacementNameRunes),
-		Branch:   sanitizePlacementDisplay(binding.Metadata.Branch, maxPlacementNameRunes),
+		Label:    sanitizePlacementLabel(binding.Metadata.Label, binding.Metadata.Branch),
+		Branch:   sanitizePlacementBranch(binding.Metadata.Branch),
 		Revision: sanitizePlacementDisplay(binding.Metadata.Revision, maxPlacementIdentityRunes),
 	}
 }
 
 func sanitizePlacementDisplay(value string, maxRunes int) string {
+	value = cleanPlacementText(value, maxRunes)
+	if strings.ContainsAny(value, `/\\`) || strings.HasPrefix(value, "..") ||
+		(len(value) >= 2 && value[1] == ':') {
+		return ""
+	}
+	return value
+}
+
+// sanitizePlacementBranch keeps a short branch name such as "feat/x". It
+// permits "/" only inside a well-formed git branch name, whose rules already
+// exclude absolute paths, ".." traversal, backslashes, and drive letters.
+func sanitizePlacementBranch(value string) string {
+	value = cleanPlacementText(value, maxPlacementNameRunes)
+	if !validBranchName(value) {
+		return ""
+	}
+	return value
+}
+
+// sanitizePlacementLabel relaxes the path guard only for a label that is the
+// branch itself; any other slash-bearing label stays blank.
+func sanitizePlacementLabel(label, branch string) string {
+	if got := sanitizePlacementDisplay(label, maxPlacementNameRunes); got != "" || label != branch {
+		return got
+	}
+	return sanitizePlacementBranch(branch)
+}
+
+func cleanPlacementText(value string, maxRunes int) string {
 	value = session.ToValidUTF8(value)
 	var b strings.Builder
 	for _, r := range value {
@@ -943,9 +972,21 @@ func sanitizePlacementDisplay(value string, maxRunes int) string {
 	if len(runes) > maxRunes {
 		value = string(runes[:maxRunes])
 	}
-	if strings.ContainsAny(value, `/\\`) || strings.HasPrefix(value, "..") ||
-		(len(value) >= 2 && value[1] == ':') {
-		return ""
-	}
 	return value
+}
+
+// validBranchName applies the `git check-ref-format --branch` rules to a short
+// branch name.
+func validBranchName(name string) bool {
+	if name == "" || name == "@" || strings.HasPrefix(name, "-") || strings.HasSuffix(name, ".") ||
+		strings.Contains(name, "..") || strings.Contains(name, "@{") ||
+		strings.ContainsAny(name, ` ~^:?*[\`) {
+		return false
+	}
+	for _, component := range strings.Split(name, "/") {
+		if component == "" || strings.HasPrefix(component, ".") || strings.HasSuffix(component, ".lock") {
+			return false
+		}
+	}
+	return true
 }
