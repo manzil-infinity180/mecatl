@@ -65,7 +65,7 @@ func feedWorktreesList(t *testing.T, m Model, cmd tea.Cmd) Model {
 }
 
 func TestWorktreesDiscoveryIsSessionScoped(t *testing.T) {
-	fw := &fakeWorktreeLister{wts: []client.Worktree{{Selector: testWorktreeSelector("opaque-1"), Kind: "git", Label: "feature", Branch: "refs/heads/feature", Revision: "abcdef1"}}}
+	fw := &fakeWorktreeLister{wts: []client.Worktree{{Selector: testWorktreeSelector("opaque-1"), Kind: "git", Label: "feature", Branch: "feature", Revision: "abcdef1"}}}
 	m := newWorktreesModel(t, &fakeConv{}, fw)
 	mm, cmd := m.openWorktrees()
 	m = mm.(Model)
@@ -79,7 +79,7 @@ func TestWorktreesDiscoveryIsSessionScoped(t *testing.T) {
 }
 
 func TestWorktreeSwitchUsesOpaqueSelectorAndClosesAfterBinding(t *testing.T) {
-	wt := client.Worktree{Selector: testWorktreeSelector("opaque-selector"), Kind: "git", Label: "feature", Branch: "refs/heads/feature"}
+	wt := client.Worktree{Selector: testWorktreeSelector("opaque-selector"), Kind: "git", Label: "feature", Branch: "feature"}
 	conv := &fakeConv{}
 	m := newWorktreesModel(t, conv, &fakeWorktreeLister{wts: []client.Worktree{wt}})
 	m.conv.addUser("source transcript")
@@ -144,7 +144,7 @@ func TestServerOwnedSessionPlacement_Scenario3_OwnershipRelistAndSafeSwitch(t *t
 }
 
 func TestWorktreeFilterUsesDisplayMetadata(t *testing.T) {
-	wts := []client.Worktree{{Selector: testWorktreeSelector("a"), Label: "main"}, {Selector: testWorktreeSelector("b"), Label: "feature", Branch: "refs/heads/topic"}}
+	wts := []client.Worktree{{Selector: testWorktreeSelector("a"), Label: "main"}, {Selector: testWorktreeSelector("b"), Label: "feature", Branch: "topic"}}
 	got := filterWorktrees(wts, "topic")
 	if len(got) != 1 || got[0].Selector.IsZero() {
 		t.Fatalf("filtered worktrees = %+v", got)
@@ -152,7 +152,7 @@ func TestWorktreeFilterUsesDisplayMetadata(t *testing.T) {
 }
 
 func TestWorktreeCopyDescribesStartingANewSession(t *testing.T) {
-	wt := client.Worktree{Selector: testWorktreeSelector("opaque-copy"), Label: "feature", Branch: "refs/heads/feature"}
+	wt := client.Worktree{Selector: testWorktreeSelector("opaque-copy"), Label: "feature", Branch: "feature"}
 	m := newWorktreesModel(t, &fakeConv{}, &fakeWorktreeLister{wts: []client.Worktree{wt}})
 	mm, cmd := m.openWorktrees()
 	m = feedWorktreesList(t, mm.(Model), cmd)
@@ -176,5 +176,20 @@ func TestWorktreeCopyDescribesStartingANewSession(t *testing.T) {
 	}
 	if strings.Contains(strings.ToLower(confirm), "switch workspace") || strings.Contains(confirm, "enter: switch") {
 		t.Fatalf("worktree confirmation still implies a workspace switch:\n%s", confirm)
+	}
+}
+
+func TestWorktreeRowShowsBranchOnlyWhenItDiffersFromLabel(t *testing.T) {
+	for _, tc := range []struct {
+		wt   client.Worktree
+		want string
+	}{
+		{client.Worktree{Label: "feat/x", Branch: "feat/x", Revision: "abcdef1234567"}, "feat/x  (abcdef12)"},
+		{client.Worktree{Label: "Primary repository", Branch: "main"}, "Primary repository  (main)"},
+		{client.Worktree{Label: "Detached worktree", Revision: "abcdef1234567"}, "Detached worktree  (abcdef12)"},
+	} {
+		if got := worktreeRowText(tc.wt); got != tc.want {
+			t.Errorf("worktreeRowText(%+v) = %q, want %q", tc.wt, got, tc.want)
+		}
 	}
 }

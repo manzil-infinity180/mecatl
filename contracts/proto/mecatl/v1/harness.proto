@@ -965,6 +965,8 @@ message CreateSessionResponse {
 // backend locator, exact EnvironmentRef, or reusable selector.
 message PlacementMetadata {
   string kind = 1;
+  // label is provider display text, such as "Primary repository" or, for a
+  // git worktree, the short branch name.
   string label = 2;
   // branch is the short branch name (for example "feat/x"); empty for a
   // detached or unknown HEAD.

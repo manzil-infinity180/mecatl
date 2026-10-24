@@ -2542,7 +2542,9 @@ func (x *CreateSessionResponse) GetResolvedAgentDefinitionName() string {
 type PlacementMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Kind  string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	Label string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
+	// label is provider display text, such as "Primary repository" or, for a
+	// git worktree, the short branch name.
+	Label string `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
 	// branch is the short branch name (for example "feat/x"); empty for a
 	// detached or unknown HEAD.
 	Branch        string `protobuf:"bytes,3,opt,name=branch,proto3" json:"branch,omitempty"`

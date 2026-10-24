@@ -2512,7 +2512,7 @@ backend locator, exact EnvironmentRef, or reusable selector.
 | Field | Type | Label | Oneof | Description |
 |---|---|---|---|---|
 | `kind` | `string` |  |  |  |
-| `label` | `string` |  |  |  |
+| `label` | `string` |  |  | label is provider display text, such as &#34;Primary repository&#34; or, for a git worktree, the short branch name. |
 | `branch` | `string` |  |  | branch is the short branch name (for example &#34;feat/x&#34;); empty for a detached or unknown HEAD. |
 | `revision` | `string` |  |  |  |
 

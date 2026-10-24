@@ -1040,6 +1040,9 @@ export type PlacementMetadata = Message<"mecatl.v1.PlacementMetadata"> & {
   kind: string;
 
   /**
+   * label is provider display text, such as "Primary repository" or, for a
+   * git worktree, the short branch name.
+   *
    * @generated from field: string label = 2;
    */
   label: string;

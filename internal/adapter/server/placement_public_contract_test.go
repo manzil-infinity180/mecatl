@@ -251,14 +251,23 @@ func TestNamespacedBranchSurvivesDiscoveryAndPlacement(t *testing.T) {
 	if got := cleared.GetPlacement(); got.GetLabel() != "feat/x" || got.GetBranch() != "feat/x" {
 		t.Fatalf("clear placement metadata = %+v", got)
 	}
-	sess, err := svc.GetSession(context.Background(), session.SessionID(cleared.GetSessionId()))
+	got, err := h.GetSession(context.Background(), &mecatlv1.GetSessionRequest{SessionId: cleared.GetSessionId()})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if sess.Placement.Label != "feat/x" || sess.Placement.Branch != "feat/x" {
-		t.Fatalf("session placement = %+v", sess.Placement)
+	if p := got.GetSession().GetPlacement(); p.GetLabel() != "feat/x" || p.GetBranch() != "feat/x" {
+		t.Fatalf("session placement = %+v", p)
 	}
-	if strings.Contains(cleared.String(), "/srv/") {
-		t.Fatalf("private path escaped: %v", cleared)
+	forked, err := h.ForkSession(context.Background(), &mecatlv1.ForkSessionRequest{SourceSessionId: created.GetSessionId(), WorktreeSelector: &selector})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p := forked.GetPlacement(); p.GetLabel() != "feat/x" || p.GetBranch() != "feat/x" {
+		t.Fatalf("fork placement metadata = %+v", p)
+	}
+	for _, msg := range []string{cleared.String(), got.String(), forked.String()} {
+		if strings.Contains(msg, "/srv/") {
+			t.Fatalf("private path escaped: %v", msg)
+		}
 	}
 }
