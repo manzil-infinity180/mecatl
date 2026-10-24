@@ -369812,6 +369812,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792768218939,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "peppescg@gmail.com",
+            "name": "Giuseppe Scuglia",
+            "username": "peppescg"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "13b631377acb19b719fbf160ded2c4e7bb3d065b",
+          "message": "fix(deps): pick up the CVE-2026-111497 Brotli fix and clear the Studio and SDK audits (#2507)\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-24T21:24:13+02:00",
+          "tree_id": "99a04100fa2d6fa98c1d5e3ab267d282c4b0eabb",
+          "url": "https://github.com/stacklok/mecatl/commit/13b631377acb19b719fbf160ded2c4e7bb3d065b"
+        },
+        "date": 1792870552223,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16116,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12881,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 794,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -482596,6 +482635,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792870549542,
+  "lastUpdate": 1792870552979,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
