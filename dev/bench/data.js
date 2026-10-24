@@ -372194,6 +372194,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792877124797,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "5a6ba8e34b76ff7fb37ff66de2e1dc85329eedf5",
+          "message": "chore(deps): update module github.com/anthropics/anthropic-sdk-go to v2 (#2509)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>\nCo-authored-by: Radoslav Dimitrov <radoslav@stacklok.com>\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-24T17:13:27-04:00",
+          "tree_id": "a3ae14dcda1d5a8bd87c7f19ec063029ab0feb54",
+          "url": "https://github.com/stacklok/mecatl/commit/5a6ba8e34b76ff7fb37ff66de2e1dc85329eedf5"
+        },
+        "date": 1792877855576,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16132,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12897,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -485662,6 +485701,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792877852728,
+  "lastUpdate": 1792877856697,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
