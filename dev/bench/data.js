@@ -335840,6 +335840,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792877120387,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "5a6ba8e34b76ff7fb37ff66de2e1dc85329eedf5",
+          "message": "chore(deps): update module github.com/anthropics/anthropic-sdk-go to v2 (#2509)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>\nCo-authored-by: Radoslav Dimitrov <radoslav@stacklok.com>\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-24T17:13:27-04:00",
+          "tree_id": "a3ae14dcda1d5a8bd87c7f19ec063029ab0feb54",
+          "url": "https://github.com/stacklok/mecatl/commit/5a6ba8e34b76ff7fb37ff66de2e1dc85329eedf5"
+        },
+        "date": 1792877851614,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -485628,6 +485662,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792877848680,
+  "lastUpdate": 1792877852728,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
