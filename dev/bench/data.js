@@ -334050,6 +334050,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792870548764,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9566193f475b05308e1ef58e92afa86fb736dfdb",
+          "message": "chore(deps): update actions/setup-go action to v7 (#2502)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-24T16:07:53-04:00",
+          "tree_id": "a53cec261b257ba512930619154fb263099b08de",
+          "url": "https://github.com/stacklok/mecatl/commit/9566193f475b05308e1ef58e92afa86fb736dfdb"
+        },
+        "date": 1792873194388,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -483073,6 +483107,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792873191281,
+  "lastUpdate": 1792873194972,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
