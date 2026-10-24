@@ -372988,6 +372988,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792879002805,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "236d4ee795ed28a90be086f94555c2e2b3d30d63",
+          "message": "chore(deps): update pnpm to v12 (#2510)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>\nCo-authored-by: Radoslav Dimitrov <radoslav@stacklok.com>\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-24T17:51:49-04:00",
+          "tree_id": "8fdfe35d569456ee598520e3b4c1f110d2132f92",
+          "url": "https://github.com/stacklok/mecatl/commit/236d4ee795ed28a90be086f94555c2e2b3d30d63"
+        },
+        "date": 1792879722930,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16147,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12909.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -486684,6 +486723,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792879720154,
+  "lastUpdate": 1792879723639,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
