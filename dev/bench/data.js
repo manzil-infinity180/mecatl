@@ -371003,6 +371003,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792874575194,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4c6e3ff504789f005eb9152ff2c95f77f6cc4213",
+          "message": "chore(deps): update dependency happy-dom to v21 (#2503)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-24T16:47:04-04:00",
+          "tree_id": "61c244d3aaf25748e6ac6ce5a29c4e52fb18c7f9",
+          "url": "https://github.com/stacklok/mecatl/commit/4c6e3ff504789f005eb9152ff2c95f77f6cc4213"
+        },
+        "date": 1792875495539,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16128.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12893,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -484129,6 +484168,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792875492680,
+  "lastUpdate": 1792875496623,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
