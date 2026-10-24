@@ -336198,6 +336198,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792877851614,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "743699121bb87f232054c9ce22faa4ba4531121b",
+          "message": "chore(deps): update go dependencies (#2500)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>\nCo-authored-by: Radoslav Dimitrov <radoslav@stacklok.com>\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-24T17:44:18-04:00",
+          "tree_id": "cf0dc20af89098179ccf3a7913f58f880fffa141",
+          "url": "https://github.com/stacklok/mecatl/commit/743699121bb87f232054c9ce22faa4ba4531121b"
+        },
+        "date": 1792878999112,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -486139,6 +486173,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792878996237,
+  "lastUpdate": 1792878999887,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
