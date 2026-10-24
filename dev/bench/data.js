@@ -370606,6 +370606,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792873197906,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "50d44876f32c566c31cf60d6b2b41a053ae5998b",
+          "message": "chore(deps): update dependency vitest to v5 (#2508)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-24T16:30:53-04:00",
+          "tree_id": "5b068b565ec10fa39576b0a6c9aac0a98db34c62",
+          "url": "https://github.com/stacklok/mecatl/commit/50d44876f32c566c31cf60d6b2b41a053ae5998b"
+        },
+        "date": 1792874575194,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16148,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12912.5,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -483618,6 +483657,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792874572334,
+  "lastUpdate": 1792874575736,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
