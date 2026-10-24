@@ -371400,6 +371400,45 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792875495539,
         "tool": "customSmallerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "18a5b775ed349ba17a024c914fca8817e1d1206e",
+          "message": "chore(deps): update tooling dependencies (#2501)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>\nCo-authored-by: Radoslav Dimitrov <radoslav@stacklok.com>\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-10-24T17:01:36-04:00",
+          "tree_id": "b9ed988f2eb7ce5d81d85541ce0883bb5b972bbd",
+          "url": "https://github.com/stacklok/mecatl/commit/18a5b775ed349ba17a024c914fca8817e1d1206e"
+        },
+        "date": 1792876375480,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "tui_scrollback_view/allocs_per_op",
+            "value": 16129,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_scrollback_view_steady/allocs_per_op",
+            "value": 12894,
+            "unit": "allocs/op"
+          },
+          {
+            "name": "tui_spinner_tick_vpview/allocs_per_op",
+            "value": 795,
+            "unit": "allocs/op"
+          }
+        ]
       }
     ],
     "mecatl scenarios (smaller-is-better)": [
@@ -484640,6 +484679,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792876372650,
+  "lastUpdate": 1792876376556,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
