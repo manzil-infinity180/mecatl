@@ -334408,6 +334408,40 @@ window.BENCHMARK_DATA = {
         },
         "date": 1792873194388,
         "tool": "customBiggerIsBetter"
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "29139614+renovate[bot]@users.noreply.github.com",
+            "name": "renovate[bot]",
+            "username": "renovate[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "50d44876f32c566c31cf60d6b2b41a053ae5998b",
+          "message": "chore(deps): update dependency vitest to v5 (#2508)\n\nCo-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>",
+          "timestamp": "2026-10-24T16:30:53-04:00",
+          "tree_id": "5b068b565ec10fa39576b0a6c9aac0a98db34c62",
+          "url": "https://github.com/stacklok/mecatl/commit/50d44876f32c566c31cf60d6b2b41a053ae5998b"
+        },
+        "date": 1792874571601,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "single_session_long/cache_hit_rate",
+            "value": 0.9,
+            "unit": "ratio"
+          },
+          {
+            "name": "team_fanout/cache_hit_rate",
+            "value": 0.75,
+            "unit": "ratio"
+          }
+        ]
       }
     ],
     "mecatl scenarios (render allocs, advisory)": [
@@ -483584,6 +483618,6 @@ window.BENCHMARK_DATA = {
       }
     ]
   },
-  "lastUpdate": 1792874568630,
+  "lastUpdate": 1792874572334,
   "repoUrl": "https://github.com/stacklok/mecatl"
 }
