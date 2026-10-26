@@ -2512,8 +2512,8 @@ backend locator, exact EnvironmentRef, or reusable selector.
 | Field | Type | Label | Oneof | Description |
 |---|---|---|---|---|
 | `kind` | `string` |  |  |  |
-| `label` | `string` |  |  |  |
-| `branch` | `string` |  |  |  |
+| `label` | `string` |  |  | label is provider display text, such as &#34;Local workspace&#34; or, for a git worktree, the short branch name. It may be empty. |
+| `branch` | `string` |  |  | branch is the git branch name (for example &#34;feat/x&#34;). It is empty for a non-git placement, a detached or unknown HEAD, or a rejected name. |
 | `revision` | `string` |  |  |  |
 
 
@@ -2575,8 +2575,8 @@ one — &#34;nobody&#34; must never be renderable as an anonymous somebody.
 
 | Field | Type | Label | Oneof | Description |
 |---|---|---|---|---|
-| `issuer` | `string` |  |  | issuer is the IdP that minted the token (the canonical `iss` claim). |
-| `subject` | `string` |  |  | subject is the caller id within that issuer (the `sub` claim). |
+| `issuer` | `string` |  |  | issuer is the identity&#39;s issuer: the token&#39;s canonical `iss` claim, or the `iss` inside an accepted `sub_id` claim. |
+| `subject` | `string` |  |  | subject is the caller id within that issuer: the token&#39;s `sub` claim, or the `sub` inside an accepted `sub_id` claim. |
 | `grant_type` | `string` |  |  | grant_type is how the caller authenticated: &#34;user&#34;, &#34;client_credentials&#34; or &#34;system&#34;. A bare string passthrough (no enum) — the domain owns the closed set. |
 | `name` | `string` |  |  | name is an optional human-readable display label. It is NEVER part of identity — display only. |
 
@@ -3984,8 +3984,8 @@ caller/source scoped, and accepted only by ClearSession or ForkSession.
 |---|---|---|---|---|
 | `selector` | `string` |  |  |  |
 | `kind` | `string` |  |  |  |
-| `label` | `string` |  |  |  |
-| `branch` | `string` |  |  |  |
+| `label` | `string` |  |  | label is provider display text, such as the short branch name or &#34;Detached worktree&#34;. It may be empty. |
+| `branch` | `string` |  |  | branch is the git branch name (for example &#34;feat/x&#34;). It is empty for a detached HEAD or a rejected name. |
 | `revision` | `string` |  |  |  |
 | `bare` | `bool` |  |  |  |
 

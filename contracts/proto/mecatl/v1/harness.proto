@@ -965,7 +965,11 @@ message CreateSessionResponse {
 // backend locator, exact EnvironmentRef, or reusable selector.
 message PlacementMetadata {
   string kind = 1;
+  // label is provider display text, such as "Local workspace" or, for a git
+  // worktree, the short branch name. It may be empty.
   string label = 2;
+  // branch is the git branch name (for example "feat/x"). It is empty for a
+  // non-git placement, a detached or unknown HEAD, or a rejected name.
   string branch = 3;
   string revision = 4;
 }
@@ -1145,9 +1149,11 @@ message ListSessionsRequest {
 // An ABSENT principal is an ABSENT message (a nil owner), never a present-but-empty
 // one — "nobody" must never be renderable as an anonymous somebody.
 message Principal {
-  // issuer is the IdP that minted the token (the canonical `iss` claim).
+  // issuer is the identity's issuer: the token's canonical `iss` claim, or the
+  // `iss` inside an accepted `sub_id` claim.
   string issuer = 1;
-  // subject is the caller id within that issuer (the `sub` claim).
+  // subject is the caller id within that issuer: the token's `sub` claim, or the
+  // `sub` inside an accepted `sub_id` claim.
   string subject = 2;
   // grant_type is how the caller authenticated: "user", "client_credentials" or
   // "system". A bare string passthrough (no enum) — the domain owns the closed set.
@@ -3154,7 +3160,11 @@ message ListCommandsResponse {
 message Worktree {
   string selector = 1;
   string kind = 2;
+  // label is provider display text, such as the short branch name or
+  // "Detached worktree". It may be empty.
   string label = 3;
+  // branch is the git branch name (for example "feat/x"). It is empty for a
+  // detached HEAD or a rejected name.
   string branch = 4;
   string revision = 5;
   bool bare = 6;

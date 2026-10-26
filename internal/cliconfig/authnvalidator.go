@@ -61,6 +61,8 @@ func defaultNewValidator(ctx context.Context, c OIDCConfig) (server.PrincipalVal
 		TrustedCAFile:              c.TrustedCAFile,
 		TrustedCAPEM:               caPEM,
 		HTTPClient:                 c.httpClient,
+		OwnerIdentity:              c.OwnerIdentity,
+		AcceptedClientIDs:          c.AcceptedClientIDs,
 	})
 	if err != nil {
 		return nil, err

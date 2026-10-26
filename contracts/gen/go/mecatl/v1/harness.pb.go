@@ -2540,11 +2540,15 @@ func (x *CreateSessionResponse) GetResolvedAgentDefinitionName() string {
 // PlacementMetadata is safe display data. It never contains a filesystem path,
 // backend locator, exact EnvironmentRef, or reusable selector.
 type PlacementMetadata struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
-	Label         string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
-	Branch        string                 `protobuf:"bytes,3,opt,name=branch,proto3" json:"branch,omitempty"`
-	Revision      string                 `protobuf:"bytes,4,opt,name=revision,proto3" json:"revision,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Kind  string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	// label is provider display text, such as "Local workspace" or, for a git
+	// worktree, the short branch name. It may be empty.
+	Label string `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
+	// branch is the git branch name (for example "feat/x"). It is empty for a
+	// non-git placement, a detached or unknown HEAD, or a rejected name.
+	Branch        string `protobuf:"bytes,3,opt,name=branch,proto3" json:"branch,omitempty"`
+	Revision      string `protobuf:"bytes,4,opt,name=revision,proto3" json:"revision,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3385,9 +3389,11 @@ func (x *ListSessionsRequest) GetCursor() string {
 // one — "nobody" must never be renderable as an anonymous somebody.
 type Principal struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// issuer is the IdP that minted the token (the canonical `iss` claim).
+	// issuer is the identity's issuer: the token's canonical `iss` claim, or the
+	// `iss` inside an accepted `sub_id` claim.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// subject is the caller id within that issuer (the `sub` claim).
+	// subject is the caller id within that issuer: the token's `sub` claim, or the
+	// `sub` inside an accepted `sub_id` claim.
 	Subject string `protobuf:"bytes,2,opt,name=subject,proto3" json:"subject,omitempty"`
 	// grant_type is how the caller authenticated: "user", "client_credentials" or
 	// "system". A bare string passthrough (no enum) — the domain owns the closed set.
@@ -13173,13 +13179,17 @@ func (x *ListCommandsResponse) GetCommands() []*Command {
 // Worktree is one display-safe eligible placement choice. Selector is opaque,
 // caller/source scoped, and accepted only by ClearSession or ForkSession.
 type Worktree struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Selector      string                 `protobuf:"bytes,1,opt,name=selector,proto3" json:"selector,omitempty"`
-	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
-	Label         string                 `protobuf:"bytes,3,opt,name=label,proto3" json:"label,omitempty"`
-	Branch        string                 `protobuf:"bytes,4,opt,name=branch,proto3" json:"branch,omitempty"`
-	Revision      string                 `protobuf:"bytes,5,opt,name=revision,proto3" json:"revision,omitempty"`
-	Bare          bool                   `protobuf:"varint,6,opt,name=bare,proto3" json:"bare,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Selector string                 `protobuf:"bytes,1,opt,name=selector,proto3" json:"selector,omitempty"`
+	Kind     string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// label is provider display text, such as the short branch name or
+	// "Detached worktree". It may be empty.
+	Label string `protobuf:"bytes,3,opt,name=label,proto3" json:"label,omitempty"`
+	// branch is the git branch name (for example "feat/x"). It is empty for a
+	// detached HEAD or a rejected name.
+	Branch        string `protobuf:"bytes,4,opt,name=branch,proto3" json:"branch,omitempty"`
+	Revision      string `protobuf:"bytes,5,opt,name=revision,proto3" json:"revision,omitempty"`
+	Bare          bool   `protobuf:"varint,6,opt,name=bare,proto3" json:"bare,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
