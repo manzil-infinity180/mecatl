@@ -34,6 +34,7 @@ import (
 
 	"github.com/google/uuid"
 
+	oidcauthn "github.com/stacklok/mecatl/authn/oidc"
 	"github.com/stacklok/mecatl/engine/agent"
 	"github.com/stacklok/mecatl/engine/port"
 	"github.com/stacklok/mecatl/engine/session"
@@ -666,6 +667,11 @@ func parseFlags(argv []string) (config, error) {
 		if cfg.enableParallel || cfg.enableTeams {
 			return config{}, errors.New("remote execution does not support --enable-parallel or --enable-teams")
 		}
+	}
+	// The broker's owner is the company identity AS-1 witnessed in sub_id;
+	// without this it would be AS-1's own issuer and pseudonymous subject.
+	if cfg.enableIdentityBroker && cfg.oidc.Enabled() && cfg.oidc.OwnerIdentity != oidcauthn.OwnerIdentitySubID {
+		return config{}, errors.New("--enable-identity-broker with --oidc-issuer requires --oidc-owner-identity=sub_id")
 	}
 	if cfg.redisFilesystem && cfg.workspace != "" {
 		return config{}, errors.New("--redis-filesystem and --workspace are mutually exclusive")

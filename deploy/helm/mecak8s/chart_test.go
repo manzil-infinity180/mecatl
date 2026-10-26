@@ -554,6 +554,88 @@ func TestMecak8sHelmChart_ProtectedResourceProfile(t *testing.T) {
 	}
 }
 
+func TestMecak8sHelmChart_OwnerIdentity(t *testing.T) {
+	base := []string{"template", "owner", ".", "--set", "mockProvider=true,permissionMode=yolo", "--set", "redis.local.enabled=true", "--set", "oidc.enabled=true,oidc.issuer=https://as1.example.com,oidc.audience=mecatl"}
+	rendered, err := helm(t, append(slices.Clone(base), "--set", "oidc.ownerIdentity=sub_id", "--set", "oidc.acceptedClientIDs={mecatui,studio}", "--set", "oidc.resource=https://mecatl.example.com,oidc.clientID=studio")...)
+	if err != nil {
+		t.Fatalf("render owner identity sub_id: %v\n%s", err, rendered)
+	}
+	args := deploymentFromRender(t, rendered).Spec.Template.Spec.Containers[0].Args
+	for _, want := range []string{"--oidc-owner-identity=sub_id", "--oidc-accepted-client-ids=mecatui,studio"} {
+		if !slices.Contains(args, want) {
+			t.Fatalf("rendered args missing %q: %v", want, args)
+		}
+	}
+
+	for name, extra := range map[string][]string{"default": nil, "empty": {"--set", "oidc.ownerIdentity="}} {
+		rendered, err = helm(t, append(slices.Clone(base), extra...)...)
+		if err != nil {
+			t.Fatalf("render %s owner identity: %v\n%s", name, err, rendered)
+		}
+		for _, arg := range deploymentFromRender(t, rendered).Spec.Template.Spec.Containers[0].Args {
+			if strings.HasPrefix(arg, "--oidc-owner-identity") || strings.HasPrefix(arg, "--oidc-accepted-client-ids") {
+				t.Fatalf("%s owner identity rendered %v", name, arg)
+			}
+		}
+	}
+
+	unknown := append(slices.Clone(base), "--set", "oidc.ownerIdentity=upstream_subject", "--set", "oidc.acceptedClientIDs={mecatui}")
+	if output, err := helm(t, unknown...); err == nil || !strings.Contains(output, "ownerIdentity") {
+		t.Fatalf("schema: render = %v, want ownerIdentity enum failure:\n%s", err, output)
+	}
+	// The template rule backs the schema enum when schema validation is skipped.
+	const wantUnknown = `oidc.ownerIdentity "upstream_subject" is not supported; accepted values: sub_id`
+	if output, err := helm(t, append(unknown, "--skip-schema-validation")...); err == nil || !strings.Contains(output, wantUnknown) {
+		t.Fatalf("template: render = %v, want failure %q:\n%s", err, wantUnknown, output)
+	}
+
+	// The identity broker, enabled through extraArgs, needs the owner identity
+	// when OIDC is on; mecak8s refuses it at startup, so the chart fails first.
+	for _, arg := range []string{"--enable-identity-broker", "-enable-identity-broker", "--enable-identity-broker=true", "--enable-identity-broker=1"} {
+		want := fmt.Sprintf("extraArgs entry %q enables the identity broker, which requires oidc.ownerIdentity=sub_id when oidc.enabled is true", arg)
+		if output, err := helm(t, append(slices.Clone(base), "--set-string", "extraArgs[0]="+arg)...); err == nil || !strings.Contains(output, want) {
+			t.Fatalf("broker %s without owner identity: render = %v, want failure %q:\n%s", arg, err, want, output)
+		}
+	}
+	for name, extra := range map[string][]string{
+		"broker explicitly off":  {"--set-string", "extraArgs[0]=--enable-identity-broker=false"},
+		"broker with identity":   {"--set-string", "extraArgs[0]=--enable-identity-broker", "--set", "oidc.ownerIdentity=sub_id", "--set", "oidc.acceptedClientIDs={mecatui}"},
+		"broker without OIDC on": {"--set-string", "extraArgs[0]=--enable-identity-broker", "--set", "oidc.enabled=false"},
+	} {
+		if output, err := helm(t, append(slices.Clone(base), extra...)...); err != nil {
+			t.Fatalf("%s: render failed: %v\n%s", name, err, output)
+		}
+	}
+
+	const badEntry = "must be non-blank and contain no surrounding spaces, commas, control, or Unicode format characters"
+	for name, tc := range map[string]struct {
+		values []string
+		want   string
+	}{
+		"without client IDs":        {[]string{"oidc.ownerIdentity=sub_id"}, "oidc.ownerIdentity=sub_id requires at least one oidc.acceptedClientIDs entry"},
+		"client IDs without it":     {[]string{"oidc.acceptedClientIDs={mecatui}"}, "oidc.acceptedClientIDs requires oidc.ownerIdentity=sub_id"},
+		"without OIDC":              {[]string{"oidc.enabled=false,oidc.ownerIdentity=sub_id", "oidc.acceptedClientIDs={mecatui}"}, "oidc.ownerIdentity requires oidc.enabled=true"},
+		"comma in client ID":        {[]string{"oidc.ownerIdentity=sub_id", "oidc.acceptedClientIDs[0]=mecatui\\,studio"}, badEntry},
+		"padded client ID":          {[]string{"oidc.ownerIdentity=sub_id", "oidc.acceptedClientIDs[0]= mecatui"}, badEntry},
+		"control char in client ID": {[]string{"oidc.ownerIdentity=sub_id", "oidc.acceptedClientIDs[0]=mecatui\x01"}, badEntry},
+		"advertised client ID not accepted": {
+			[]string{"oidc.ownerIdentity=sub_id", "oidc.acceptedClientIDs={studio}", "oidc.resource=https://mecatl.example.com,oidc.clientID=mecatui"},
+			`oidc.clientID "mecatui" must be listed in oidc.acceptedClientIDs when oidc.ownerIdentity is sub_id`,
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			args := slices.Clone(base)
+			for _, value := range tc.values {
+				args = append(args, "--set", value)
+			}
+			output, err := helm(t, args...)
+			if err == nil || !strings.Contains(output, tc.want) {
+				t.Fatalf("render = %v, want failure %q:\n%s", err, tc.want, output)
+			}
+		})
+	}
+}
+
 func TestMecak8sHelmChart_EdgeTerminatedTLS(t *testing.T) {
 	rendered, err := helm(t, "template", "production", ".", "-f", "ci/production-edge-tls-values.yaml")
 	if err != nil {

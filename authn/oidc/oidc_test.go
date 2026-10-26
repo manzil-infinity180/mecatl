@@ -6,6 +6,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/elliptic"
+	"crypto/hmac"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
@@ -26,6 +27,8 @@ import (
 
 	"github.com/lestrrat-go/jwx/v4/jwk"
 	"github.com/stacklok/toolhive-core/authn"
+
+	"github.com/stacklok/mecatl/engine/session"
 )
 
 func TestExplicitJWKSDoesNotApproveIssuerAsNetworkEndpoint(t *testing.T) {
@@ -339,19 +342,17 @@ func (f *jwksFixture) token(t *testing.T, audience string) string {
 
 func (f *jwksFixture) tokenWithIssuer(t *testing.T, issuer, audience string) string {
 	t.Helper()
-	header, err := json.Marshal(map[string]string{"alg": "RS256", "kid": testKID, "typ": "JWT"})
-	if err != nil {
-		t.Fatalf("marshal JWT header: %v", err)
-	}
 	now := time.Now()
-	claims, err := json.Marshal(map[string]any{
+	return f.signedToken(t, map[string]any{"alg": "RS256", "kid": testKID, "typ": "JWT"}, map[string]any{
 		"iss": issuer, "sub": "alice-uid", "aud": audience,
 		"iat": now.Unix(), "exp": now.Add(time.Minute).Unix(),
 	})
-	if err != nil {
-		t.Fatalf("marshal JWT claims: %v", err)
-	}
-	input := base64.RawURLEncoding.EncodeToString(header) + "." + base64.RawURLEncoding.EncodeToString(claims)
+}
+
+// signedToken RS256-signs claims under header with the fixture's key.
+func (f *jwksFixture) signedToken(t *testing.T, header, claims map[string]any) string {
+	t.Helper()
+	input := jwtSigningInput(t, header, claims)
 	digest := sha256.Sum256([]byte(input))
 	signature, err := rsa.SignPKCS1v15(rand.Reader, f.key, crypto.SHA256, digest[:])
 	if err != nil {
@@ -359,6 +360,248 @@ func (f *jwksFixture) tokenWithIssuer(t *testing.T, issuer, audience string) str
 	}
 	return input + "." + base64.RawURLEncoding.EncodeToString(signature)
 }
+
+func jwtSigningInput(t *testing.T, header, claims map[string]any) string {
+	t.Helper()
+	headerJSON, err := json.Marshal(header)
+	if err != nil {
+		t.Fatalf("marshal JWT header: %v", err)
+	}
+	claimsJSON, err := json.Marshal(claims)
+	if err != nil {
+		t.Fatalf("marshal JWT claims: %v", err)
+	}
+	return base64.RawURLEncoding.EncodeToString(headerJSON) + "." + base64.RawURLEncoding.EncodeToString(claimsJSON)
+}
+
+func (f *jwksFixture) ownerValidator(t *testing.T, subID bool) *Validator {
+	t.Helper()
+	cfg := Config{
+		Issuer: f.srv.URL, Audience: testAudience, JWKSURI: f.srv.URL + "/keys",
+		HTTPClient: f.srv.Client(),
+	}
+	if subID {
+		cfg.OwnerIdentity = OwnerIdentitySubID
+		cfg.AcceptedClientIDs = []string{"mecatui", "studio"}
+	}
+	validator, err := NewValidator(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("NewValidator: %v", err)
+	}
+	t.Cleanup(func() { _ = validator.Close() })
+	return validator
+}
+
+// subIDClaims is a well-formed access token claim set carrying an iss_sub
+// sub_id.
+func (f *jwksFixture) subIDClaims() map[string]any {
+	now := time.Now()
+	return map[string]any{
+		"iss": f.srv.URL, "sub": "u-alice-91", "aud": testAudience,
+		"iat": now.Unix(), "exp": now.Add(time.Minute).Unix(),
+		"client_id": "mecatui", "name": "Alice",
+		"sub_id": map[string]any{"format": "iss_sub", "iss": "https://login.example.com", "sub": "alice-204"},
+	}
+}
+
+func accessTokenHeader() map[string]any {
+	return map[string]any{"alg": "RS256", "kid": testKID, "typ": "at+jwt"}
+}
+
+func TestOwnerIdentitySubIDTokenType(t *testing.T) {
+	fixture := newJWKSFixture(t)
+	on, off := fixture.ownerValidator(t, true), fixture.ownerValidator(t, false)
+	for _, tc := range []struct {
+		name   string
+		typ    any // nil omits the header
+		wantOn bool
+	}{
+		{name: "at+jwt", typ: "at+jwt", wantOn: true},
+		{name: "application/at+jwt", typ: "application/at+jwt", wantOn: true},
+		{name: "AT+JWT", typ: "AT+JWT", wantOn: true},
+		{name: "JWT", typ: "JWT"},
+		{name: "missing"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			header := accessTokenHeader()
+			delete(header, "typ")
+			if tc.typ != nil {
+				header["typ"] = tc.typ
+			}
+			token := fixture.signedToken(t, header, fixture.subIDClaims())
+			principal, err := on.Validate(t.Context(), token)
+			if tc.wantOn && (err != nil || principal == nil) {
+				t.Fatalf("owner identity sub_id: Validate = (%#v, %v), want principal", principal, err)
+			}
+			if !tc.wantOn && (principal != nil || !errors.Is(err, ErrInvalidToken)) {
+				t.Fatalf("owner identity sub_id: Validate = (%#v, %v), want ErrInvalidToken", principal, err)
+			}
+			if principal, err := off.Validate(t.Context(), token); err != nil || principal == nil {
+				t.Fatalf("default: Validate = (%#v, %v), want principal for any typ", principal, err)
+			}
+		})
+	}
+}
+
+// toolhive-core's fixed signing-algorithm allowlist rejects these tokens; this
+// test pins that behaviour rather than code in this package.
+func TestOwnerIdentitySubIDRejectsDisallowedAlgorithms(t *testing.T) {
+	fixture := newJWKSFixture(t)
+	validator := fixture.ownerValidator(t, true)
+	none := jwtSigningInput(t, map[string]any{"alg": "none", "typ": "at+jwt"}, fixture.subIDClaims()) + "."
+	hsInput := jwtSigningInput(t, map[string]any{"alg": "HS256", "kid": testKID, "typ": "at+jwt"}, fixture.subIDClaims())
+	mac := hmac.New(sha256.New, fixture.key.N.Bytes())
+	mac.Write([]byte(hsInput))
+	hs256 := hsInput + "." + base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
+	for name, token := range map[string]string{"none": none, "HS256": hs256} {
+		if principal, err := validator.Validate(t.Context(), token); principal != nil || !errors.Is(err, ErrInvalidToken) {
+			t.Fatalf("alg %s: Validate = (%#v, %v), want ErrInvalidToken", name, principal, err)
+		}
+	}
+}
+
+func TestOwnerIdentitySubIDClaims(t *testing.T) {
+	fixture := newJWKSFixture(t)
+	on, off := fixture.ownerValidator(t, true), fixture.ownerValidator(t, false)
+	subID := func(format, iss, sub any) map[string]any {
+		return map[string]any{"format": format, "iss": iss, "sub": sub}
+	}
+	for _, tc := range []struct {
+		name   string
+		mutate func(map[string]any)
+	}{
+		{name: "client_id missing", mutate: func(c map[string]any) { delete(c, "client_id") }},
+		{name: "client_id not a string", mutate: func(c map[string]any) { c["client_id"] = []string{"mecatui"} }},
+		{name: "client_id not accepted", mutate: func(c map[string]any) { c["client_id"] = "rogue" }},
+		{name: "sub_id missing", mutate: func(c map[string]any) { delete(c, "sub_id") }},
+		{name: "sub_id not an object", mutate: func(c map[string]any) { c["sub_id"] = "https://login.example.com|alice-204" }},
+		{name: "sub_id wrong format", mutate: func(c map[string]any) { c["sub_id"] = subID("email", "https://login.example.com", "alice-204") }},
+		{name: "sub_id missing format", mutate: func(c map[string]any) { delete(c["sub_id"].(map[string]any), "format") }},
+		{name: "sub_id empty iss", mutate: func(c map[string]any) { c["sub_id"] = subID("iss_sub", "", "alice-204") }},
+		{name: "sub_id empty sub", mutate: func(c map[string]any) { c["sub_id"] = subID("iss_sub", "https://login.example.com", "") }},
+		{name: "sub_id non-string iss", mutate: func(c map[string]any) { c["sub_id"] = subID("iss_sub", 7, "alice-204") }},
+		{name: "sub_id non-string sub", mutate: func(c map[string]any) { c["sub_id"] = subID("iss_sub", "https://login.example.com", 204) }},
+		{name: "sub_id non-string format", mutate: func(c map[string]any) { c["sub_id"] = subID(true, "https://login.example.com", "alice-204") }},
+		{name: "sub_id missing sub", mutate: func(c map[string]any) { delete(c["sub_id"].(map[string]any), "sub") }},
+		{name: "sub_id NUL iss", mutate: func(c map[string]any) { c["sub_id"] = subID("iss_sub", "https://login.example.com\x00x", "alice-204") }},
+		{name: "sub_id NUL sub", mutate: func(c map[string]any) { c["sub_id"] = subID("iss_sub", "https://login.example.com", "alice\x00204") }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			claims := fixture.subIDClaims()
+			tc.mutate(claims)
+			token := fixture.signedToken(t, accessTokenHeader(), claims)
+			principal, err := on.Validate(t.Context(), token)
+			if principal != nil || !errors.Is(err, ErrInvalidToken) {
+				t.Fatalf("owner identity sub_id: Validate = (%#v, %v), want ErrInvalidToken", principal, err)
+			}
+			categorized, ok := err.(interface{ AuthenticationRejectionCategory() string })
+			if !ok || categorized.AuthenticationRejectionCategory() != "invalid_token" {
+				t.Fatalf("owner identity sub_id: category = %#v, want invalid_token", err)
+			}
+			if principal, err := off.Validate(t.Context(), token); err != nil || principal == nil {
+				t.Fatalf("default: Validate = (%#v, %v), want principal", principal, err)
+			}
+		})
+	}
+}
+
+func TestOwnerIdentitySubIDPrincipalComesFromSubID(t *testing.T) {
+	fixture := newJWKSFixture(t)
+	token := fixture.signedToken(t, accessTokenHeader(), fixture.subIDClaims())
+
+	studioClaims := fixture.subIDClaims()
+	studioClaims["client_id"] = "studio"
+	for name, token := range map[string]string{"first client": token, "second client": fixture.signedToken(t, accessTokenHeader(), studioClaims)} {
+		got, err := fixture.ownerValidator(t, true).Validate(t.Context(), token)
+		if err != nil {
+			t.Fatalf("owner identity sub_id, %s: Validate: %v", name, err)
+		}
+		if got.Issuer != "https://login.example.com" || got.Subject != "alice-204" || got.Name != "Alice" || got.GrantType != session.GrantTypeUser {
+			t.Fatalf("owner identity sub_id, %s: principal = %#v, want the sub_id identity", name, got)
+		}
+	}
+
+	got, err := fixture.ownerValidator(t, false).Validate(t.Context(), token)
+	if err != nil {
+		t.Fatalf("default: Validate: %v", err)
+	}
+	if got.Issuer != fixture.srv.URL || got.Subject != "u-alice-91" {
+		t.Fatalf("default: principal = %#v, want token iss and sub", got)
+	}
+}
+
+func TestOwnerIdentitySubIDClonesAcceptedClientIDs(t *testing.T) {
+	fixture := newJWKSFixture(t)
+	ids := []string{"mecatui"}
+	validator, err := NewValidator(context.Background(), Config{
+		Issuer: fixture.srv.URL, Audience: testAudience, JWKSURI: fixture.srv.URL + "/keys",
+		HTTPClient: fixture.srv.Client(), OwnerIdentity: OwnerIdentitySubID, AcceptedClientIDs: ids,
+	})
+	if err != nil {
+		t.Fatalf("NewValidator: %v", err)
+	}
+	t.Cleanup(func() { _ = validator.Close() })
+	ids[0] = "rogue"
+	token := fixture.signedToken(t, accessTokenHeader(), fixture.subIDClaims())
+	if principal, err := validator.Validate(t.Context(), token); err != nil || principal == nil {
+		t.Fatalf("Validate after caller mutated AcceptedClientIDs = (%#v, %v), want principal", principal, err)
+	}
+}
+
+func TestOwnerIdentitySubIDConfig(t *testing.T) {
+	t.Parallel()
+	if got := authnConfig(Config{OwnerIdentity: OwnerIdentitySubID}); len(got.AcceptedTokenTypes) != 1 || got.AcceptedTokenTypes[0] != "at+jwt" {
+		t.Fatalf("owner identity sub_id: AcceptedTokenTypes = %v, want [at+jwt]", got.AcceptedTokenTypes)
+	}
+	if got := authnConfig(Config{}); got.AcceptedTokenTypes != nil {
+		t.Fatalf("default: AcceptedTokenTypes = %v, want any typ", got.AcceptedTokenTypes)
+	}
+	// The empty owner identity is off: the token's own iss and sub key the caller.
+	if off := newJWKSFixture(t).ownerValidator(t, false); off.subIDOwner != nil {
+		t.Fatalf("empty owner identity: subIDOwner = %#v, want nil", off.subIDOwner)
+	}
+	base := Config{Issuer: "https://idp.example", Audience: testAudience}
+	for _, tc := range []struct {
+		name          string
+		ownerIdentity OwnerIdentity
+		clientIDs     []string
+		mutate        func(*Config)
+		want          string
+	}{
+		{name: "unknown owner identity", ownerIdentity: "upstream_subject", clientIDs: []string{"mecatui"}, want: `unknown owner identity "upstream_subject" (accepted: sub_id)`},
+		{name: "owner identity sub_id without client IDs", ownerIdentity: OwnerIdentitySubID, want: "requires accepted client IDs"},
+		{name: "owner identity sub_id with empty client ID", ownerIdentity: OwnerIdentitySubID, clientIDs: []string{"mecatui", ""}, want: "must not be empty"},
+		{name: "client IDs without owner identity sub_id", clientIDs: []string{"mecatui"}, want: "require owner identity sub_id"},
+		{name: "owner identity sub_id with any audience", ownerIdentity: OwnerIdentitySubID, clientIDs: []string{"mecatui"}, mutate: func(c *Config) {
+			c.Audience, c.AllowAnyAudience = "", true
+		}, want: "requires an audience"},
+		{name: "owner identity sub_id with AllowAnyAudience beside an audience", ownerIdentity: OwnerIdentitySubID, clientIDs: []string{"mecatui"}, mutate: func(c *Config) {
+			c.AllowAnyAudience = true
+		}, want: "requires an audience"},
+		{name: "owner identity sub_id with empty audience", ownerIdentity: OwnerIdentitySubID, clientIDs: []string{"mecatui"}, mutate: func(c *Config) {
+			c.Audience = ""
+		}, want: "audience is empty"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			cfg := base
+			cfg.OwnerIdentity, cfg.AcceptedClientIDs = tc.ownerIdentity, tc.clientIDs
+			if tc.mutate != nil {
+				tc.mutate(&cfg)
+			}
+			validator, err := NewValidator(context.Background(), cfg)
+			if validator != nil || !errors.Is(err, ErrInvalidConfig) || !strings.Contains(err.Error(), tc.want) {
+				t.Fatalf("NewValidator = (%#v, %v), want %q ErrInvalidConfig", validator, err, tc.want)
+			}
+		})
+	}
+}
+
+// Validator is published; adding a non-comparable field would break callers
+// that compare it. This fails to compile if Validator stops being comparable.
+func requireComparable[T comparable]() {}
+
+var _ = requireComparable[Validator]
 
 func TestValidatorOptionalAudiencePreservesConfiguredAudienceBinding(t *testing.T) {
 	fixture := newJWKSFixture(t)
@@ -713,6 +956,9 @@ func TestKubernetesValidatorRejectsIncompleteConfiguration(t *testing.T) {
 		"caller HTTP client":     func(c *Config, _ *KubernetesBootstrapConfig) { c.HTTPClient = http.DefaultClient },
 		"insecure private mode":  func(c *Config, _ *KubernetesBootstrapConfig) { c.InsecureAllowPrivateIssuer = true },
 		"scoped private mode":    func(c *Config, _ *KubernetesBootstrapConfig) { c.AllowPrivateHTTPSIssuer = true },
+		"owner identity sub_id": func(c *Config, _ *KubernetesBootstrapConfig) {
+			c.OwnerIdentity, c.AcceptedClientIDs = OwnerIdentitySubID, []string{"mecatui"}
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			cfg, bootstrap := kubernetesTestConfig(t, fixture.srv, projected)

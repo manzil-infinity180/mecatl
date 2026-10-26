@@ -34,7 +34,9 @@ same caller. Do not expose that posture as a multi-user endpoint.
 
 ## What identity means
 
-The durable owner is the verified `(issuer, subject)` pair from the token:
+The durable owner is a verified `(issuer, subject)` pair: by default the token's
+own `iss` and `sub`, or the pair inside its `sub_id` claim when
+[`--oidc-owner-identity=sub_id`](#own-resources-by-the-sub_id-identity) is set:
 
 ```json
 {
@@ -104,6 +106,77 @@ outage, the last-good keys may continue to work until the staleness limit; after
 that the service returns `503` until it can refresh. A malformed, expired,
 wrong-issuer, or wrong-audience token returns `401`. The cache is not persisted,
 so a restarted process fetches keys again.
+
+## Own resources by the `sub_id` identity
+
+When users sign in through an authorization server that federates to your
+company IdP, the token's own `iss` and `sub` name the authorization server and
+its subject for the user. Set `--oidc-owner-identity=sub_id` to key owners by
+the company IdP identity the token carries instead, in its `sub_id` claim (an
+RFC 9493 `iss_sub` subject identifier). `sub_id` is the only accepted value; an
+empty value keeps owners keyed by the token's own `iss` and `sub`.
+
+```sh
+mecated serve \
+  --oidc-issuer https://auth.example.com/as \
+  --oidc-audience https://mecatl.example.com/api \
+  --oidc-owner-identity=sub_id \
+  --oidc-accepted-client-ids mecatui,studio \
+  --workspace /srv/mecatl/workspace
+```
+
+Set `--oidc-issuer` to the authorization server. With this option, the server
+rejects a token with `401` unless its `typ` header is `at+jwt` or
+`application/at+jwt` (an RFC 9068 access token), its `client_id` claim is listed
+in `--oidc-accepted-client-ids`, and its `sub_id` claim has format `iss_sub`
+with a non-empty `iss` and `sub`. The owner is that `iss` and `sub`.
+
+The server refuses to start when:
+
+- `--oidc-owner-identity` is set to a non-empty value other than `sub_id`.
+- `--oidc-owner-identity` or `--oidc-accepted-client-ids` is set without
+  `--oidc-issuer`.
+- `--oidc-owner-identity=sub_id` is set without `--oidc-accepted-client-ids`.
+- `--oidc-accepted-client-ids` is set without `--oidc-owner-identity=sub_id`.
+- `--oidc-accepted-client-ids` lists no client IDs, for example
+  `--oidc-accepted-client-ids=`.
+- `--oidc-client-id` names a client that `--oidc-accepted-client-ids` does not
+  list.
+- In `mecak8s`, `--enable-identity-broker` is set with `--oidc-issuer` but
+  without `--oidc-owner-identity=sub_id`.
+
+Existing sessions, schedules, memory, and other owned data keep matching their
+owners only if, for each user, the authorization server's upstream IdP returns
+the same issuer and the same `sub` that the server validated directly before.
+The same IdP does not guarantee the same `sub`. Some IdPs issue pairwise
+subjects per registered application; for example, Microsoft Entra ID's `sub`
+differs for each application. The authorization server is a new application
+registration, so with such an IdP every user's `sub` changes. When either value
+differs, existing data stays with the previous owner identities and is
+inaccessible to the new ones; remap owners before you enable the option. Before
+switching, sign in through the authorization server and confirm that the
+`sub_id` claim carries the same `iss` and `sub` as a token the server accepts
+today.
+
+The same applies later: with a pairwise-subject IdP, replacing the authorization
+server's application registration changes every user's `sub`, and users lose
+access to the sessions and other data they owned.
+
+Settings that name exact principals match the `sub_id` identity once the option
+is on, so list the IdP's issuer and subject there, not the authorization
+server's:
+
+- `storage_management.principals` in `settings.yaml` matches issuer and subject.
+- `mecak8s` `--execution-allowed-subjects` (Helm `execution.allowedSubjects`)
+  matches the subject.
+
+The server cannot detect a changed `sub` or a principal setting that still
+names the authorization server's identity at startup. Either mismatch appears
+only as missing data or refused access after users sign in.
+
+The server trusts `sub_id` in every token that passes these checks. The
+authorization server must issue `sub_id` only from a sign-in it performed and
+must map each company identity to exactly one of its own subjects.
 
 ## Protected-resource discovery (RFC 9728)
 
