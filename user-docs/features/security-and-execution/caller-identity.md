@@ -166,9 +166,14 @@ Settings that name exact principals match the `sub_id` identity once the option
 is on, so list the IdP's issuer and subject there, not the authorization
 server's:
 
-- `storage_management.principals` in `settings.yaml` matches issuer and subject.
-- `mecak8s` `--execution-allowed-subjects` (Helm `execution.allowedSubjects`)
-  matches the subject.
+- `storage_management.principals` in `settings.yaml`.
+- `mecak8s` `--execution-allowed-principal` (Helm
+  `execution.allowedPrincipals`).
+
+Both match issuer and subject exactly. `mecak8s` refuses to start with the
+deprecated subject-only `--execution-allowed-subjects` (Helm
+`execution.allowedSubjects`) while the option is on, because that form cannot
+name the IdP's issuer.
 
 The server cannot detect a changed `sub` or a principal setting that still
 names the authorization server's identity at startup. Either mismatch appears
@@ -187,7 +192,19 @@ client requests; it does not grant server authorization. When omitted, login
 requests `openid`, `profile`, and `offline_access`.
 
 Mecatl publishes the audience and client ID as `com.stacklok.mecatl.audience`
-and `com.stacklok.mecatl.client_id` extension members.
+and `com.stacklok.mecatl.client_id` extension members. With
+`--oidc-owner-identity=sub_id`, it also publishes
+`com.stacklok.mecatl.identity_broker_sign_in: true`: users sign in through the
+identity broker's authorization server (AS-1). A client that discovers this
+member sends the audience as the RFC 8707 `resource` parameter when it signs in
+and refreshes, and refreshes its access token before each request that opens a
+session, because AS-1 accepts each access token for only one session open.
+Otherwise it omits `resource`, because some identity providers, such as
+Microsoft Entra ID, reject the parameter. Explicit `mecatui login --issuer ...`
+never sends it. `mecatui` saves this member when you run `mecatui login`, so if
+you signed in before the server published it, run `mecatui login` again
+(switching to the identity broker changes the issuer, which requires a new login
+anyway).
 
 Discovery rejects a `--scopes` override. Configure advertised scopes through
 `oidc.scopes`; explicit `mecatui login --issuer ...` still accepts `--scopes`.

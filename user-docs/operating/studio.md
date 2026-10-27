@@ -451,6 +451,13 @@ deployment's identity provider with Authorization Code and PKCE; Studio keeps
 the session in encrypted, HttpOnly cookies and forwards the user's token on
 every request.
 
+Studio doesn't yet support a `mecak8s` deployment that signs users in through
+the identity broker: one that runs with `--oidc-owner-identity=sub_id` and
+publishes
+[`com.stacklok.mecatl.identity_broker_sign_in`](/features/security-and-execution/caller-identity.md#protected-resource-discovery-rfc-9728).
+Connect Studio only to a deployment whose protected-resource document omits
+that member.
+
 Set these variables on the Studio container:
 
 |Variable|Value|

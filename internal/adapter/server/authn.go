@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"golang.org/x/time/rate"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -20,6 +21,7 @@ import (
 
 	"github.com/stacklok/mecatl/engine/port"
 	"github.com/stacklok/mecatl/engine/session"
+	"github.com/stacklok/mecatl/internal/identitybroker"
 	"github.com/stacklok/mecatl/internal/syscaller"
 )
 
@@ -528,7 +530,26 @@ func identityStatus(err error) error {
 	if errors.Is(err, ErrIdentityUnavailable) {
 		return status.Error(codes.Unavailable, "identity provider unavailable")
 	}
-	return status.Error(codes.Unauthenticated, "missing or invalid bearer token")
+	return bearerRejected()
+}
+
+// bearerRejectedReason is the ErrorInfo reason on the authenticator's own
+// rejections of a missing or invalid bearer. It is distinct from the
+// handler-level "unauthenticated" code: the authenticator rejects before any
+// handler runs, so a client may refresh its token and retry (or replay a
+// stream) on this reason and on no other Unauthenticated.
+const bearerRejectedReason = "bearer_rejected"
+
+// bearerRejected is the Unauthenticated status for a rejected bearer, tagged
+// with bearerRejectedReason. If attaching the detail fails, the bare status is
+// returned, which a client treats as not retryable.
+func bearerRejected() error {
+	st := status.New(codes.Unauthenticated, "missing or invalid bearer token")
+	tagged, err := st.WithDetails(&errdetails.ErrorInfo{Reason: bearerRejectedReason, Domain: errorDomain})
+	if err != nil {
+		return st.Err()
+	}
+	return tagged.Err()
 }
 
 func rejectionCategory(err error) authObservationCategory {
@@ -565,14 +586,17 @@ func (a *Authenticator) observeAuthentication(ctx context.Context, outcome authO
 
 // authGRPC verifies the static bearer token (when configured) and the caller
 // identity (when a verifier is wired), returning the token presented (empty when
-// static auth is off) and the verified principal (nil when identity is off).
-func (a *Authenticator) authGRPC(ctx context.Context) (string, *session.Principal, error) {
+// static auth is off), the verified principal (nil when identity is off), and
+// the bearer presented as an access token, which verified the principal when
+// it is non-nil. The access token's own type keeps it from being swapped with
+// the static token.
+func (a *Authenticator) authGRPC(ctx context.Context) (string, *session.Principal, identitybroker.Token, error) {
 	bearer, present, duplicate := tokenFromMetadata(ctx)
 	if duplicate {
 		if a.cfg.authEnabled() || a.cfg.identityConfigured() {
 			a.observeAuthentication(ctx, authOutcomeRejected, authCategoryDuplicateAuthorization, authTransportGRPC, authStatusGRPCUnauthenticated)
 		}
-		return "", nil, status.Error(codes.Unauthenticated, "duplicate authorization metadata")
+		return "", nil, identitybroker.Token{}, status.Error(codes.Unauthenticated, "duplicate authorization metadata")
 	}
 	staticTok := ""
 	if a.cfg.authEnabled() {
@@ -582,7 +606,7 @@ func (a *Authenticator) authGRPC(ctx context.Context) (string, *session.Principa
 				category = authCategoryMissingBearer
 			}
 			a.observeAuthentication(ctx, authOutcomeRejected, category, authTransportGRPC, authStatusGRPCUnauthenticated)
-			return "", nil, status.Error(codes.Unauthenticated, "missing or invalid bearer token")
+			return "", nil, identitybroker.Token{}, bearerRejected()
 		}
 		staticTok = bearer
 	}
@@ -609,14 +633,25 @@ func (a *Authenticator) authGRPC(ctx context.Context) (string, *session.Principa
 			}
 			a.observeAuthentication(ctx, outcome, category, authTransportGRPC, statusText)
 		}
-		return "", nil, identityErr
+		return "", nil, identitybroker.Token{}, identityErr
 	}
 	if a.cfg.identityConfigured() {
 		a.observeAuthentication(ctx, authOutcomeAccepted, authCategoryValidatedIdentity, authTransportGRPC, authStatusGRPCOK)
 	} else if a.cfg.authEnabled() {
 		a.observeAuthentication(ctx, authOutcomeAccepted, authCategoryStaticBearer, authTransportGRPC, authStatusGRPCOK)
 	}
-	return staticTok, p, nil
+	return staticTok, p, identitybroker.NewToken(bearer), nil
+}
+
+// withVerifiedCaller attaches the verified principal and the access token that
+// verified it, for the identity broker's session open. The caller must call the
+// returned function when the request returns, which empties the token.
+func withVerifiedCaller(ctx context.Context, p *session.Principal, token identitybroker.Token) (context.Context, func()) {
+	ctx = session.WithPrincipal(ctx, p)
+	if p == nil {
+		return ctx, func() {}
+	}
+	return withRequestAccessToken(ctx, token)
 }
 
 // rateGRPC enforces the rate limit for a gRPC call keyed by the verified
@@ -649,14 +684,16 @@ func (a *Authenticator) rateGRPC(ctx context.Context, token string, p *session.P
 // the handler context.
 func (a *Authenticator) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-		tok, p, err := a.authGRPC(ctx)
+		tok, p, bearer, err := a.authGRPC(ctx)
 		if err != nil {
 			return nil, err
 		}
 		if err := a.rateGRPC(ctx, tok, p); err != nil {
 			return nil, err
 		}
-		return handler(session.WithPrincipal(ctx, p), req)
+		ctx, done := withVerifiedCaller(ctx, p, bearer)
+		defer done()
+		return handler(ctx, req)
 	}
 }
 
@@ -666,7 +703,7 @@ func (a *Authenticator) UnaryInterceptor() grpc.UnaryServerInterceptor {
 func (a *Authenticator) StreamInterceptor() grpc.StreamServerInterceptor {
 	return func(srv any, ss grpc.ServerStream, _ *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		ctx := ss.Context()
-		tok, p, err := a.authGRPC(ctx)
+		tok, p, bearer, err := a.authGRPC(ctx)
 		if err != nil {
 			return err
 		}
@@ -676,7 +713,9 @@ func (a *Authenticator) StreamInterceptor() grpc.StreamServerInterceptor {
 		if p == nil {
 			return handler(srv, ss)
 		}
-		return handler(srv, principalStream{ServerStream: ss, ctx: session.WithPrincipal(ctx, p)})
+		ctx, done := withVerifiedCaller(ctx, p, bearer)
+		defer done()
+		return handler(srv, principalStream{ServerStream: ss, ctx: ctx})
 	}
 }
 
@@ -769,7 +808,9 @@ func (a *Authenticator) Middleware(next http.Handler) http.Handler {
 			}
 		}
 		if principal != nil {
-			r = r.WithContext(session.WithPrincipal(r.Context(), principal))
+			ctx, done := withVerifiedCaller(r.Context(), principal, identitybroker.NewToken(bearer))
+			defer done()
+			r = r.WithContext(ctx)
 		}
 		next.ServeHTTP(w, r)
 	})

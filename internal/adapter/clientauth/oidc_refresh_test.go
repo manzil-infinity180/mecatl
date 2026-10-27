@@ -11,6 +11,7 @@ import (
 	"math/big"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -33,6 +34,11 @@ type refreshFixture struct {
 	jwksDown        atomic.Bool
 	rotatedKID      atomic.Bool
 	descriptionOnly atomic.Bool
+	formEncoded     atomic.Bool
+	omitTokenType   atomic.Bool
+	unsavable       atomic.Bool
+	gatewayError    atomic.Bool
+	lastForm        atomic.Pointer[url.Values]
 	tokenEntered    chan struct{}
 	tokenRelease    <-chan struct{}
 }
@@ -68,6 +74,10 @@ func newRefreshFixture(t *testing.T) *refreshFixture {
 			}}})
 		case "/token":
 			f.calls.Add(1)
+			if err := r.ParseForm(); err == nil {
+				form := r.PostForm
+				f.lastForm.Store(&form)
+			}
 			if f.tokenEntered != nil {
 				close(f.tokenEntered)
 				f.tokenEntered = nil
@@ -78,6 +88,12 @@ func newRefreshFixture(t *testing.T) *refreshFixture {
 				case <-r.Context().Done():
 					return
 				}
+			}
+			if f.gatewayError.Load() {
+				w.Header().Set("Content-Type", "text/html")
+				w.WriteHeader(http.StatusBadGateway)
+				_, _ = w.Write([]byte("<html><body>502 Bad Gateway</body></html>"))
+				return
 			}
 			w.Header().Set("Content-Type", "application/json")
 			if f.bad.Load() {
@@ -98,10 +114,25 @@ func newRefreshFixture(t *testing.T) *refreshFixture {
 			if f.rotatedKID.Load() {
 				accessToken = f.tokenWithKID(t, "rotated", time.Now().Add(time.Minute), "refresh-rotated")
 			}
-			_ = json.NewEncoder(w).Encode(map[string]any{
+			if f.formEncoded.Load() {
+				w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+				_, _ = w.Write([]byte(url.Values{
+					"access_token":  {accessToken},
+					"refresh_token": {"refresh-rotated"}, "token_type": {"Bearer"}, "expires_in": {"60"},
+				}.Encode()))
+				return
+			}
+			response := map[string]any{
 				"access_token":  accessToken,
 				"refresh_token": "refresh-rotated", "token_type": "Bearer", "expires_in": 60,
-			})
+			}
+			if f.omitTokenType.Load() {
+				delete(response, "token_type")
+			}
+			if f.unsavable.Load() {
+				response["refresh_token"] = strings.Repeat("r", tokenValueLimit+1)
+			}
+			_ = json.NewEncoder(w).Encode(response)
 		default:
 			http.NotFound(w, r)
 		}
@@ -270,6 +301,79 @@ func TestRefreshMalformedExchangeOutputDoesNotReplaceCredential(t *testing.T) {
 	}
 }
 
+// TestRefreshPathFollowsIdentityBrokerSignIn pins which refresh implementation
+// runs: without identity broker sign-in the standard x/oauth2 refresh accepts a
+// form-encoded token response and sends no resource; with it the grant carries
+// the audience as the RFC 8707 resource.
+func TestRefreshPathFollowsIdentityBrokerSignIn(t *testing.T) {
+	for _, tc := range []struct {
+		name                 string
+		identityBrokerSignIn bool
+		formEncoded          bool
+		omitTokenType        bool
+		wantResource         []string
+	}{
+		{name: "standard refresh accepts a form-encoded response", formEncoded: true},
+		{name: "identity broker sign-in sends resource", identityBrokerSignIn: true, wantResource: []string{"vmcp"}},
+		{name: "standard refresh defaults an omitted token_type", omitTokenType: true},
+		{name: "identity broker sign-in defaults an omitted token_type", identityBrokerSignIn: true, omitTokenType: true, wantResource: []string{"vmcp"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newRefreshFixture(t)
+			f.formEncoded.Store(tc.formEncoded)
+			f.omitTokenType.Store(tc.omitTokenType)
+			c := credentials(t)
+			id := identity("remote.example:443")
+			id.Issuer = f.srv.URL
+			id, _ = id.Canonical()
+			original := Token{AccessToken: f.token(t, "original", time.Now().Add(time.Minute)), RefreshToken: "refresh-original", TokenType: "Bearer", Expiry: time.Now().Add(-time.Minute).UTC().Format(time.RFC3339)}
+			if _, err := c.Save(t.Context(), id, original, nil); err != nil {
+				t.Fatal(err)
+			}
+			s := f.source(t, c, id, 0)
+			defer s.Close()
+			s.identityBrokerSignIn = tc.identityBrokerSignIn
+			if _, err := s.Token(t.Context()); err != nil {
+				t.Fatalf("Token: %v", err)
+			}
+			stored, err := c.Load(t.Context(), id)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if stored.Token.RefreshToken != "refresh-rotated" || stored.Token.TokenType != "Bearer" {
+				t.Fatalf("stored refresh token = %q, type %q; want the rotated one, Bearer", stored.Token.RefreshToken, stored.Token.TokenType)
+			}
+			form := f.lastForm.Load()
+			if form == nil || form.Get("grant_type") != "refresh_token" {
+				t.Fatalf("token request form = %v, want a refresh_token grant", form)
+			}
+			if got := (*form)["resource"]; fmt.Sprint(got) != fmt.Sprint(tc.wantResource) {
+				t.Fatalf("refresh resource = %q, want %q", got, tc.wantResource)
+			}
+		})
+	}
+}
+
+// TestRefreshUnsavableRotationIsAnError: a rotated refresh token the store
+// refuses is reported, not skipped while the access token is handed out.
+func TestRefreshUnsavableRotationIsAnError(t *testing.T) {
+	f := newRefreshFixture(t)
+	f.unsavable.Store(true)
+	c := credentials(t)
+	id := identity("remote.example:443")
+	id.Issuer = f.srv.URL
+	id, _ = id.Canonical()
+	original := Token{AccessToken: f.token(t, "original", time.Now().Add(time.Minute)), RefreshToken: "refresh-original", TokenType: "Bearer", Expiry: time.Now().Add(-time.Minute).UTC().Format(time.RFC3339)}
+	if _, err := c.Save(t.Context(), id, original, nil); err != nil {
+		t.Fatal(err)
+	}
+	s := f.source(t, c, id, 0)
+	defer s.Close()
+	if token, err := s.Token(t.Context()); token != "" || !errors.Is(err, ErrCorrupt) {
+		t.Fatalf("Token returned=%v, err=%v; want no token and the refused save", token != "", err)
+	}
+}
+
 func TestRefreshRotationSaveFailureDoesNotReturnAccessToken(t *testing.T) {
 	f := newRefreshFixture(t)
 	base := credentials(t)
@@ -328,6 +432,42 @@ func TestRefreshInvalidGrantRequiresStructuredErrorCode(t *testing.T) {
 			want := name == "exact" || name == "wrapped"
 			if got != want {
 				t.Fatalf("isInvalidGrant(%v) = %v, want %v", err, got, want)
+			}
+		})
+	}
+}
+
+// TestRefreshGrantErrorResponses: only an OAuth error body becomes a
+// RetrieveError; a non-OAuth failure is a plain error whose Error() is safe
+// (RetrieveError.Error() dereferences a nil Response when ErrorCode is empty).
+func TestRefreshGrantErrorResponses(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		gateway      bool
+		invalidGrant bool
+	}{
+		{name: "502 with an HTML body", gateway: true},
+		{name: "400 invalid_grant", invalidGrant: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newRefreshFixture(t)
+			f.gatewayError.Store(tc.gateway)
+			f.bad.Store(tc.invalidGrant)
+			c := credentials(t)
+			id := identity("remote.example:443")
+			id.Issuer = f.srv.URL
+			id, _ = id.Canonical()
+			s := f.source(t, c, id, 0)
+			defer s.Close()
+			_, err := s.refreshGrant(t.Context(), "refresh-original")
+			if err == nil {
+				t.Fatal("refreshGrant succeeded against an error response")
+			}
+			if got := isInvalidGrant(err); got != tc.invalidGrant {
+				t.Fatalf("isInvalidGrant(%v) = %v, want %v", err, got, tc.invalidGrant)
+			}
+			if msg := err.Error(); msg == "" || strings.Contains(msg, "<html>") {
+				t.Fatalf("error text = %q, want a body-free description", msg)
 			}
 		})
 	}
