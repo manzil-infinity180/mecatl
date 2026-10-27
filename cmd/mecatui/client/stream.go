@@ -42,10 +42,11 @@ type Sender interface {
 // approve/cancel commands Send — so a single send-mutex is sufficient and keeps
 // the control frames ordered.
 type Stream struct {
-	recv Recver
-	send Sender
+	// reopenableStream holds both sides, serialises Sends, and performs the
+	// one-time reopen after a rejected bearer.
+	reopenableStream[mecatlv1.ConverseRequest, mecatlv1.ConverseResponse]
 
-	mu sync.Mutex // serialises Send (Recv is single-goroutine in the reader)
+	mu sync.Mutex // guards resolvedApprovals
 	// resolvedApprovals is run-scoped transport correlation. It is intentionally
 	// owned by the stream rather than the UI Model, so closing a dynamic approval
 	// surface does not leave a Model approval-state tombstone merely to reject a
@@ -58,11 +59,22 @@ type Stream struct {
 // grpc.BidiStreamingClient for both in production; pass a fake Recver (and a
 // no-op or recording Sender) in tests.
 func NewStream(recv Recver, send Sender) *Stream {
-	return &Stream{recv: recv, send: send}
+	return newAuthenticatedStream(recv, send, false)
 }
 
 func newAuthenticatedStream(recv Recver, send Sender, bearerBacked bool) *Stream {
-	return &Stream{recv: recv, send: send, bearerBacked: bearerBacked}
+	s := &Stream{bearerBacked: bearerBacked}
+	s.recv, s.send = recv, send
+	return s
+}
+
+// enableReopen arms the one-time reopen of a Converse stream after a rejected
+// bearer; reopen opens the replacement with a freshly refreshed token.
+func (s *Stream) enableReopen(reopen func() (Recver, Sender, error)) {
+	s.armReopen(func() (recvSide[mecatlv1.ConverseResponse], sendSide[mecatlv1.ConverseRequest], error) {
+		recv, send, err := reopen()
+		return recv, send, err
+	})
 }
 
 // MarkApprovalResolved records an ask id as resolved for this stream. It is
@@ -122,7 +134,7 @@ func (s *Stream) ForgetApprovalResolved(askID string) {
 // StreamClosedMsg as a no-op.
 func (s *Stream) ReadLoop(ctx context.Context, out chan<- tea.Msg) {
 	readEventLoop(ctx, func() (*mecatlv1.Event, error) {
-		resp, err := s.recv.Recv()
+		resp, err := s.receive()
 		if err != nil {
 			return nil, err
 		}
@@ -324,11 +336,4 @@ func (s *Stream) SendSteerCancel(messageID string) error {
 	return s.sendFrame(&mecatlv1.ConverseRequest{
 		Kind: &mecatlv1.ConverseRequest_SteerCancel{SteerCancel: &mecatlv1.SteerCancel{MessageId: messageID}},
 	})
-}
-
-// sendFrame serialises one Send under the mutex.
-func (s *Stream) sendFrame(req *mecatlv1.ConverseRequest) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return s.send.Send(req)
 }
